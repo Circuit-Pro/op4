@@ -96,6 +96,11 @@ TogglesPanel::TogglesPanel(QWidget *parent) : QWidget(parent) {
                                   "Use speed limit signs information from map data and car interface to automatically adapt cruise speed to road limits.",
                                   "../assets/offroad/icon_speed_limit.png",
                                   this));
+  toggles.append(new ParamControl("HyundaiNaviSL",
+                                  "Pull Hyundai Navigation Speed Limit",
+                                  "Use speed limit information from Hyundai's built in navigation on newer Hyundai models.",
+                                  "../assets/offroad/icon_speed_limit.png",
+                                  this));
   toggles.append(new ParamControl("SpeedLimitPercOffset",
                                   "Enable Speed Limit Offset",
                                   "Set speed limit slightly higher than actual speed limit for a more natural drive.",
@@ -157,6 +162,8 @@ DevicePanel::DevicePanel(QWidget* parent) : QWidget(parent) {
     }
   });
 
+  main_layout->addWidget(horizontal_line());
+  main_layout->addLayout(reset_layout);
 
   // Settings and buttons - JPR
   main_layout->addWidget(horizontal_line());
@@ -170,28 +177,7 @@ DevicePanel::DevicePanel(QWidget* parent) : QWidget(parent) {
   });
   main_layout->addWidget(gitpullbtn);
   main_layout->addWidget(horizontal_line());
-
-  const char* panda_flash = "sh /data/openpilot/panda/board/flash.sh";
-  auto pandaflashbtn = new ButtonControl("Flash Panda Firmware", "RUN");
-  QObject::connect(pandaflashbtn, &ButtonControl::clicked, [=]() {
-    std::system(panda_flash);
-    if (ConfirmationDialog::confirm("Process Completed. Reboot?", this)){
-      QTimer::singleShot(1000, []() { Hardware::reboot(); });
-    }
-  });
-  main_layout->addWidget(pandaflashbtn);
-  main_layout->addWidget(horizontal_line());
-
-  const char* panda_recover = "sh /data/openpilot/panda/board/recover.sh";
-  auto pandarecoverbtn = new ButtonControl("Panda Recover Firmware", "RUN");
-  QObject::connect(pandarecoverbtn, &ButtonControl::clicked, [=]() {
-    std::system(panda_recover);
-    if (ConfirmationDialog::confirm("Process Completed. Reboot?", this)){
-      QTimer::singleShot(1000, []() { Hardware::reboot(); });
-    }
-  });
-  main_layout->addWidget(pandarecoverbtn);
-  main_layout->addWidget(horizontal_line());
+  
   auto nTune = new ButtonControl("Run nTune AutoTune for lateral.", "nTune", "Run this after 20 or so miles of driving, to Auto Tune Lateral control.");
   QObject::connect(nTune, &ButtonControl::clicked, [=]() { 
     if (Params().getBool("IsOffroad") && ConfirmationDialog::confirm("Run nTune? This Lags click only ONCE please be patient.", this)){
@@ -567,13 +553,6 @@ QWidget * community_panel() {
                                               ));
 
   toggles_list->addWidget(horizontal_line());
-  toggles_list->addWidget(new ParamControl("SccSmootherSlowOnCurves",
-                                            "Enable Slow On Curves",
-                                            "Requires HKG Long: When activated with a properly setup car, The system will moderate speed around curves and corners.",
-                                            "../assets/offroad/icon_road.png"
-                                            ));
-
-  toggles_list->addWidget(horizontal_line());
   toggles_list->addWidget(new ParamControl("SccSmootherSyncGasPressed",
                                             "Sync set speed on gas pressed",
                                             "Syncs the set speed with the cluster when gas is pressed.",
@@ -581,7 +560,7 @@ QWidget * community_panel() {
                                             ));
   toggles_list->addWidget(horizontal_line());
   toggles_list->addWidget(new ParamControl("StockNaviDecelEnabled",
-                                            "Stock Navi based deceleration",
+                                            "Neokii Stock Navi based deceleration",
                                             "Use the stock navi based deceleration for longcontrol",
                                             "../assets/offroad/icon_road.png"
                                             ));

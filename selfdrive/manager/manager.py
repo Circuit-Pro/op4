@@ -13,7 +13,7 @@ from common.basedir import BASEDIR
 from common.params import Params, ParamKeyType
 from common.text_window import TextWindow
 from selfdrive.boardd.set_time import set_time
-from selfdrive.hardware import HARDWARE, PC
+from selfdrive.hardware import HARDWARE, PC, EON
 from selfdrive.manager.helpers import unblock_stdout
 from selfdrive.manager.process import ensure_running, launcher
 from selfdrive.manager.process_config import managed_processes
@@ -49,16 +49,16 @@ def manager_init():
     ("AutoLaneChangeEnabled", "1"),
 
     ("SccSmootherSlowOnCurves", "0"),
-    ("ShowDebugUI", "1"),
+    ("SccSmootherSyncGasPressed", "0"),
+    ("StockNaviDecelEnabled", "0"),
+    ("ShowDebugUI", "0"),
     ("SpeedLimitControl", "1"),
     ("SpeedLimitPercOffset", "1"),
     ("SpeedLimitDelayIncrease", "1"),
     ("TurnSpeedControl", "1"),
     ("TurnVisionControl", "1"),
-    ("CustomLeadMark", "0"),
     ("UseSMDPSHarness", "0"),
     ("SSCOD", "0"),
-    ("CustomLeadMark", "0"),
     ("DisableUpdates", "0"),
     ("LoggerEnabled", "0"),
     ("CleanUI", "1"),
@@ -66,11 +66,12 @@ def manager_init():
     ("UseLQR", "0"),
     ("PutPrebuilt", "0"),
     ("TPMS_Alerts", "1"),
-    ("LowSpeedAlerts", "1"),
-    ("SccSmootherSyncGasPressed", "0"),
+    ("PutPrebuilt", "0"),
     ("StockNaviDecelEnabled", "0"),
     ("ShowDebugUI", "0"),
-    ("CustomLeadMark", "0")
+    ("CustomLeadMark", "0"),
+    ("HyundaiNaviSL", "0"),
+    ("LowSpeedAlerts", "1")
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))
@@ -146,8 +147,10 @@ def manager_thread():
 
   Process(name="shutdownd", target=launcher, args=("selfdrive.shutdownd",)).start()
   Process(name="road_speed_limiter", target=launcher, args=("selfdrive.road_speed_limiter",)).start()
-  system("am startservice com.neokii.optool/.MainService")
-  system("am startservice com.neokii.openpilot/.MainService")
+
+  if EON:
+    system("am startservice com.neokii.optool/.MainService")
+    system("am startservice com.neokii.openpilot/.MainService")
 
   cloudlog.info("manager start")
   cloudlog.info({"environ": os.environ})

@@ -254,6 +254,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"UseLQR", PERSISTENT},
     {"PutPrebuilt", PERSISTENT},
     {"TPMS_Alerts", PERSISTENT},
+    {"HyundaiNaviSL", PERSISTENT},
     {"LowSpeedAlerts", PERSISTENT},
 };
 

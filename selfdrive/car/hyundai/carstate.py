@@ -38,6 +38,7 @@ class CarState(CarStateBase):
     self.cruise_unavail_cnt = 0
 
     self.apply_steer = 0.
+    self.steeringTorqueEps = 0
 
     # scc smoother
     self.acc_mode = False
@@ -92,14 +93,17 @@ class CarState(CarStateBase):
 
     ret.steeringAngleDeg = cp_sas.vl["SAS11"]['SAS_Angle']
     ret.steeringRateDeg = cp_sas.vl["SAS11"]['SAS_Speed']
+    
     ret.yawRate = cp.vl["ESP12"]['YAW_RATE']
     ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["CGW1"]['CF_Gway_TurnSigLh'],
                                                             cp.vl["CGW1"]['CF_Gway_TurnSigRh'])
     ret.steeringTorque = cp_mdps.vl["MDPS12"]['CR_Mdps_StrColTq']
     ret.steeringTorqueEps = cp_mdps.vl["MDPS12"]['CR_Mdps_OutTq']
+    ret.steeringWheelTorque = cp_mdps.vl["MDPS11"]['CR_Mdps_DrvTq'] 
+
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
-    if cp_mdps.vl["MDPS12"]['CF_Mdps_ToiUnavail'] != 0:
+    if not ret.standstill and cp_mdps.vl["MDPS12"]['CF_Mdps_ToiUnavail'] != 0:
       self.mdps_error_cnt += 1
     else:
       self.mdps_error_cnt = 0
@@ -115,6 +119,8 @@ class CarState(CarStateBase):
     ret.cruiseState.available = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                       cp.vl['EMS16']['CRUISE_LAMP_M'] != 0
     ret.cruiseState.standstill = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
+
+    ret.cruiseState.enabledAcc = ret.cruiseState.enabled
 
     if ret.cruiseState.enabled:
       ret.cruiseState.speed = cp_scc.vl["SCC11"]['VSetDis'] * self.speed_conv_to_ms if not self.no_radar else \
@@ -159,6 +165,12 @@ class CarState(CarStateBase):
       ret.tpmsFr = cp.vl["TPMS11"]["PRESSURE_FR"] / 10 * 14.5038
       ret.tpmsRl = cp.vl["TPMS11"]["PRESSURE_RL"] / 10 * 14.5038
       ret.tpmsRr = cp.vl["TPMS11"]["PRESSURE_RR"] / 10 * 14.5038
+
+    #Parking Sensors - JPR
+    #ret.ParkFrontRight = cp.vl["PAS11"]["CF_Gway_PASDisplayFLH"]
+    #ret.ParkFrontLeft = cp.vl["PAS11"]["CF_Gway_PASDisplayFLH"]
+    #ret.ParkRearRight = cp.vl["PAS11"]["CF_Gway_PASDisplayFLH"]
+    #ret.ParkRearLeft = cp.vl["PAS11"]["CF_Gway_PASDisplayFLH"]
 
 
     # TODO: refactor gear parsing in function
@@ -227,6 +239,7 @@ class CarState(CarStateBase):
 
   @staticmethod
   def get_can_parser(CP):
+    
 
     signals = [
       # sig_name, sig_address, default
@@ -272,6 +285,55 @@ class CarState(CarStateBase):
       ("ESC_Off_Step", "TCS15", 0),
 
       #("CF_Lvr_GearInf", "LVR11", 0),        # Transmission Gear (0 = N or P, 1-8 = Fwd, 14 = Rev)
+
+      ("MainMode_ACC", "SCC11", 1),
+      ("SCCInfoDisplay", "SCC11", 0),
+      ("AliveCounterACC", "SCC11", 0),
+      ("VSetDis", "SCC11", 30),
+      ("ObjValid", "SCC11", 0),
+      ("DriverAlertDisplay", "SCC11", 0),
+      ("TauGapSet", "SCC11", 4),
+      ("ACC_ObjStatus", "SCC11", 0),
+      ("ACC_ObjLatPos", "SCC11", 0),
+      ("ACC_ObjDist", "SCC11", 150), #TK211X value is 204.6
+      ("ACC_ObjRelSpd", "SCC11", 0),
+      ("Navi_SCC_Curve_Status", "SCC11", 0),
+      ("Navi_SCC_Curve_Act", "SCC11", 0),
+      ("Navi_SCC_Camera_Act", "SCC11", 0),
+      ("Navi_SCC_Camera_Status", "SCC11", 2),
+
+      ("ACCMode", "SCC12", 0),
+      ("CF_VSM_Prefill", "SCC12", 0),
+      ("CF_VSM_DecCmdAct", "SCC12", 0),
+      ("CF_VSM_HBACmd", "SCC12", 0),
+      ("CF_VSM_Warn", "SCC12", 0),
+      ("CF_VSM_Stat", "SCC12", 0),
+      ("CF_VSM_BeltCmd", "SCC12", 0),
+      ("ACCFailInfo", "SCC12", 0),
+      ("StopReq", "SCC12", 0),
+      ("CR_VSM_DecCmd", "SCC12", 0),
+      ("aReqRaw", "SCC12", 0), #aReqMax
+      ("TakeOverReq", "SCC12", 0),
+      ("PreFill", "SCC12", 0),
+      ("aReqValue", "SCC12", 0), #aReqMin
+      ("CF_VSM_ConfMode", "SCC12", 1),
+      ("AEB_Failinfo", "SCC12", 0),
+      ("AEB_Status", "SCC12", 2),
+      ("AEB_CmdAct", "SCC12", 0),
+      ("AEB_StopReq", "SCC12", 0),
+      ("CR_VSM_Alive", "SCC12", 0),
+      ("CR_VSM_ChkSum", "SCC12", 0),
+
+      ("SCCDrvModeRValue", "SCC13", 2),
+      ("SCC_Equip", "SCC13", 1),
+      ("AebDrvSetStatus", "SCC13", 0),
+
+      ("JerkUpperLimit", "SCC14", 0),
+      ("JerkLowerLimit", "SCC14", 0),
+      ("SCCMode2", "SCC14", 0),
+      ("ComfortBandUpper", "SCC14", 0),
+      ("ComfortBandLower", "SCC14", 0),
+
       ("UNIT", "TPMS11", 0),
       ("PRESSURE_FL", "TPMS11", 0),
       ("PRESSURE_FR", "TPMS11", 0),
@@ -358,10 +420,12 @@ class CarState(CarStateBase):
         ("CF_Mdps_SErr", "MDPS12", 0),
         ("CR_Mdps_StrTq", "MDPS12", 0),
         ("CF_Mdps_FailStat", "MDPS12", 0),
-        ("CR_Mdps_OutTq", "MDPS12", 0)
+        ("CR_Mdps_OutTq", "MDPS12", 0),
+        ("CR_Mdps_DrvTq", "MDPS11", 0),
       ]
       checks += [
-        ("MDPS12", 50)
+        ("MDPS12", 50),
+        ("MDPS11", 100),
       ]
     if CP.sasBus == 0:
       signals += [
@@ -421,12 +485,12 @@ class CarState(CarStateBase):
         ("FCA_CmdAct", "FCA11", 0),
         ("CF_VSM_Warn", "FCA11", 0),
       ]
-
-      # if not CP.openpilotLongitudinalControl:
-      #   checks += [("FCA11", 50)]
+      if not CP.openpilotLongitudinalControl:
+        checks += [("FCA11", 50)]
 
     if CP.carFingerprint in [CAR.SANTA_FE]:
       checks.remove(("TCS13", 50))
+
 
     if CP.enableBsm:
       signals += [
@@ -454,18 +518,19 @@ class CarState(CarStateBase):
         ("CF_Mdps_Def", "MDPS12", 0),
         ("CF_Mdps_ToiActive", "MDPS12", 0),
         ("CF_Mdps_ToiUnavail", "MDPS12", 0),
-        ("CF_Mdps_ToiFlt", "MDPS12", 0),
         ("CF_Mdps_MsgCount2", "MDPS12", 0),
         ("CF_Mdps_Chksum2", "MDPS12", 0),
+        ("CF_Mdps_ToiFlt", "MDPS12", 0),
         ("CF_Mdps_SErr", "MDPS12", 0),
         ("CR_Mdps_StrTq", "MDPS12", 0),
         ("CF_Mdps_FailStat", "MDPS12", 0),
-        ("CR_Mdps_OutTq", "MDPS12", 0)
+        ("CR_Mdps_OutTq", "MDPS12", 0),
+        ("CR_Mdps_DrvTq", "MDPS11", 0),
       ]
       checks += [
-        ("MDPS12", 50)
+        ("MDPS12", 50),
+        ("MDPS11", 100),
       ]
-
     if CP.sasBus == 1:
       signals += [
         ("SAS_Angle", "SAS11", 0),
