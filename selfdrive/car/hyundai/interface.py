@@ -577,8 +577,8 @@ class CarInterface(CarInterfaceBase):
         self.low_speed_alert = True
       if ret.vEgo > (self.CP.minSteerSpeed + 4.):
         self.low_speed_alert = False
-      if self.low_speed_alert:
-        events.add(car.CarEvent.EventName.belowSteerSpeed)
+      if self.low_speed_alert and not self.CS.mdps_bus:
+        events.add(EventName.belowSteerSpeed)
 
     #TPMS Alerts - JPR
     if CAR.STINGER:
@@ -617,8 +617,6 @@ class CarInterface(CarInterfaceBase):
       events.add(EventName.brakeUnavailable)
     #if abs(ret.steeringAngleDeg) > self.CP.maxSteeringAngleDeg and EventName.steerSaturated not in events.events:
       #events.add(EventName.steerSaturated)
-    if self.low_speed_alert and not self.CS.mdps_bus:
-      events.add(EventName.belowSteerSpeed)
     if self.CC.turning_indicator_alert:
       events.add(EventName.turningIndicatorOn)
     #if self.CS.lkas_button_on != self.CS.prev_lkas_button:
