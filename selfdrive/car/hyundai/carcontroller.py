@@ -152,8 +152,6 @@ class CarController():
     if lkas_active and self.spas_active_last: 
       apply_steer = 0
     
-
-    
     UseSMDPS = Params().get_bool('UseSMDPSHarness')
     if Params().get_bool('LongControlEnabled'):
       min_set_speed = 0 * CV.KPH_TO_MS
@@ -183,7 +181,7 @@ class CarController():
 
     self.lkas_active = lkas_active
     self.spas_active = spas_active
-    
+
     if self.turning_signal_timer > 0:
       self.turning_signal_timer -= 1  
 
