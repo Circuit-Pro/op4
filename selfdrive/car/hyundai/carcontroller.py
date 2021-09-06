@@ -181,6 +181,9 @@ class CarController():
       lkas_active = False
       spas_active = False
 
+    self.lkas_active = lkas_active
+    self.spas_active = spas_active
+    
     if self.turning_signal_timer > 0:
       self.turning_signal_timer -= 1  
 
