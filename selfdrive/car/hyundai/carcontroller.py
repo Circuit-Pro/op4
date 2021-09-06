@@ -28,7 +28,7 @@ STEER_ANG_MAX = 250         # SPAS Max Angle
 ANGLE_DELTA_BP = [0., 5., 15.]
 ANGLE_DELTA_V = [0.8, 0.5, 0.2]     # windup limit
 ANGLE_DELTA_VU = [1.0, 0.8, 0.3]   # unwind limit
-TQ = 20 # = 1 NM * 100 is unit of measure for wheel.
+TQ = 25 # = 1 NM * 100 is unit of measure for wheel.
 SPAS_SWITCH = 38 * CV.MPH_TO_MS #MPH
 ###### SPAS #######
 
@@ -145,6 +145,7 @@ class CarController():
     if CS.spas_enabled:
       if enabled and TQ <= CS.out.steeringWheelTorque <= -TQ:
         spas_active = False
+        lkas_active = False
       elif abs(apply_angle - CS.out.steeringAngleDeg) > 8:
         spas_active = False
 
