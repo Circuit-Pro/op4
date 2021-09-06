@@ -138,16 +138,20 @@ class CarController():
       self.last_apply_angle = apply_angle
 
     spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_active and abs(apply_angle) > 0.5
-    self.spas_active = spas_active
+  
     lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active
-    self.lkas_active = lkas_active
-    if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
-      spas_active = False
+
     if CS.spas_enabled:
       if enabled and TQ <= CS.out.steeringWheelTorque <= -TQ:
         spas_active = False
+      elif abs(apply_angle - CS.out.steeringAngleDeg) > 8:
+        spas_active = False
+
     if not lkas_active:
       apply_steer = 0
+    if lkas_active and self.spas_active_last: 
+      apply_steer = 0
+    
 
     
     UseSMDPS = Params().get_bool('UseSMDPSHarness')
