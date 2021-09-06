@@ -29,7 +29,7 @@ TQ = 25 # = 1 NM * 100 is unit of measure for wheel.
 SPAS_SWITCH = 38 * CV.MPH_TO_MS #MPH
 #Try to fix OpenPilot wobble of SPAS at speed.
 SPEED = [0., 10., 20., 30., 40.]
-RATIO = [1., 0.97, 0.94, 0.91]
+RATIO = [1., 1.0, 0.985, 0.97, 0.955]
 ###### SPAS #######
 
 EventName = car.CarEvent.EventName
