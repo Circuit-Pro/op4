@@ -524,7 +524,13 @@ QWidget * community_panel() {
   toggles_list->addWidget(horizontal_line());
   toggles_list->addWidget(new ParamControl("spasEnabled",
                                             "Enable SPAS.",
-                                            "Enable Send Parking Assist Messages up to 6MPH. Warning: It is beta, be careful!!",
+                                            "Enable Send Parking Assist Messages up to 38mph. Warning: It is beta, be careful!!",
+                                            "../assets/offroad/icon_road.png"
+                                              ));
+  toggles_list->addWidget(horizontal_line());
+  toggles_list->addWidget(new ParamControl("spasAlways",
+                                            "Enable SPAS Always.",
+                                            "Enable Send Parking Assist Messages. Warning: It is beta, be careful!!",
                                             "../assets/offroad/icon_road.png"
                                               ));
   toggles_list->addWidget(horizontal_line());

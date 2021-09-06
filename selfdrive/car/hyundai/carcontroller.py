@@ -30,6 +30,9 @@ ANGLE_DELTA_V = [0.8, 0.5, 0.2]     # windup limit
 ANGLE_DELTA_VU = [1.0, 0.8, 0.3]   # unwind limit
 TQ = 25 # = 1 NM * 100 is unit of measure for wheel.
 SPAS_SWITCH = 38 * CV.MPH_TO_MS #MPH
+#Try to fix OpenPilot wobble of SPAS at speed.
+SPEED = [0., 10., 20., 30., 40.]
+RATIO = [1., 0.97, 0.94, 0.91]
 ###### SPAS #######
 
 EventName = car.CarEvent.EventName
@@ -137,9 +140,10 @@ class CarController():
         rate_limit = interp(CS.out.vEgo, ANGLE_DELTA_BP, ANGLE_DELTA_VU)
 
       apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit) 
+      apply_angle = apply_angle * interp(CS.out.vEgo, SPEED, RATIO)
       self.last_apply_angle = apply_angle
 
-    spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_active and abs(apply_angle) > 0.5
+    spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_active and abs(apply_angle) > 0.5 or CS.spas_enabled and enabled and self.spas_always
   
     lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active
 
