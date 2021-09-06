@@ -1,7 +1,4 @@
-import math
-from selfdrive.car.interfaces import CarInterfaceBase
-from selfdrive.car.hyundai.interface import CarInterface, Params
-from selfdrive.controls.lib.latcontrol_indi import LatControlINDI
+
 from common.numpy_fast import clip, interp
 import numpy as np
 import os
