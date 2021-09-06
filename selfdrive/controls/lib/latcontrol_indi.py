@@ -82,7 +82,6 @@ class LatControlINDI():
 
     return self.sat_count > self.sat_limit
 
-
   def update(self, active, CS, CP, VM, params, curvature, curvature_rate):
     self.speed = CS.vEgo
     # Update Kalman filter
@@ -101,6 +100,7 @@ class LatControlINDI():
       self.output_steer = 0.0
       self.steer_filter.x = 0.0
     else:
+
       rate_des = VM.get_steer_from_curvature(-curvature_rate, CS.vEgo)
 
       # Expected actuator value
