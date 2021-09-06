@@ -99,6 +99,7 @@ class CarController():
       self.mdps11_stat_last = 0
       self.spas_always = Params().get_bool('spasAlways')
       self.lkas_active = False
+      self.spas_active = False
       
     self.ldws_opt = Params().get_bool('IsLdwsCar')
     self.stock_navi_decel_enabled = Params().get_bool('StockNaviDecelEnabled')
