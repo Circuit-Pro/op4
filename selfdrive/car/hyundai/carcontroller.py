@@ -147,14 +147,10 @@ class CarController():
       if enabled and TQ <= CS.out.steeringWheelTorque <= -TQ:
         spas_active = False
         lkas_active = False
+        apply_steer = 0
       elif abs(apply_angle - CS.out.steeringAngleDeg) > 8:
         spas_active = False
 
-    if not lkas_active:
-      apply_steer = 0
-    if lkas_active and self.spas_active_last: 
-      apply_steer = 0
-    
     UseSMDPS = Params().get_bool('UseSMDPSHarness')
     if Params().get_bool('LongControlEnabled'):
       min_set_speed = 0 * CV.KPH_TO_MS
@@ -179,8 +175,15 @@ class CarController():
     if CS.out.leftBlinker or CS.out.rightBlinker:
       self.turning_signal_timer = 1.0 / DT_CTRL  # Disable for 1.0 Seconds after blinker turned off
     if self.turning_indicator_alert and enabled: # set and clear by interface
+      apply_steer = 0
       lkas_active = False
       spas_active = False
+
+    if not lkas_active:
+      CS.steeringPressed = True
+      apply_steer = 0
+    if lkas_active and self.spas_active_last: 
+      apply_steer = 0
 
     self.lkas_active = lkas_active
     self.spas_active = spas_active
