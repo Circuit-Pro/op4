@@ -137,7 +137,8 @@ class CarController():
         rate_limit = interp(CS.out.vEgo, ANGLE_DELTA_BP, ANGLE_DELTA_VU)
 
       apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit) 
-      apply_angle = apply_angle * interp(CS.out.vEgo, SPEED, RATIO)
+      if Params().get_bool('spasAlways'):
+        apply_angle = apply_angle * interp(CS.out.vEgo, SPEED, RATIO)
       self.last_apply_angle = apply_angle
 
     spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_active and abs(apply_angle) > 0.5 or CS.spas_enabled and enabled and self.spas_always
