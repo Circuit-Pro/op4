@@ -612,12 +612,14 @@ QWidget * community_panel() {
                                             "For use with cars that can't steer down to zero and have the appropriate hardware.",
                                             "../assets/offroad/icon_road.png"
                                             ));
+
   toggles_list->addWidget(horizontal_line());  
   toggles_list->addWidget(new ParamControl("SSCOD",
                                             "Stop Screen Capture on disengage",
                                             "Stop Screen Capture on disengage, loss of steering, or any other event.",
                                             "../assets/offroad/icon_road.png"
-                                            ));     
+                                            ));
+                                            
   toggles_list->addWidget(horizontal_line());        
 
   QWidget *widget = new QWidget;
