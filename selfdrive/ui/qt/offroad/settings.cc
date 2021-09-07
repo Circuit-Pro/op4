@@ -479,7 +479,8 @@ QWidget * community_panel() {
 
 //settings - JPR
   toggles_list->addWidget(horizontal_line());
-  toggles_list->addWidget(new ParamControl("PutPrebuilt", "Prebuilt Enable",
+  toggles_list->addWidget(new ParamControl("PutPrebuilt",
+                                  "Prebuilt Enable",
                                   "Create prebuilt files to speed up load time.",
                                   "../assets/offroad/icon_addon.png"));
   toggles_list->addWidget(horizontal_line());
