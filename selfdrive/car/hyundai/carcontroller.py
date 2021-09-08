@@ -134,14 +134,15 @@ class CarController():
     if CS.spas_enabled:
       apply_angle = actuators.steeringAngleDeg
       if abs(apply_angle - CS.out.steeringAngleDeg) > 8: # Rate limit for when steering angle is far from apply_angle - JPR
-        rate_limit = 1
+        rate_limit = 1.5
         apply_angle = clip(actuators.steeringAngleDeg, CS.out.steeringAngleDeg - rate_limit, CS.out.steeringAngleDeg + rate_limit)
       else:
         if self.last_apply_angle * apply_angle > 0. and abs(apply_angle) > abs(self.last_apply_angle):
           rate_limit = interp(CS.out.vEgo, ANGLE_DELTA_BP, ANGLE_DELTA_V)
         else:
           rate_limit = interp(CS.out.vEgo, ANGLE_DELTA_BP, ANGLE_DELTA_VU)
-        apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)       
+        apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)    
+
       if Params().get_bool('spasAlways'):
         apply_angle = apply_angle * interp(CS.out.vEgo, SPEED, RATIO)
       self.last_apply_angle = apply_angle
