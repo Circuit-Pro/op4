@@ -137,8 +137,13 @@ class CarController():
         rate_limit = interp(CS.out.vEgo, ANGLE_DELTA_BP, ANGLE_DELTA_V)
       else:
         rate_limit = interp(CS.out.vEgo, ANGLE_DELTA_BP, ANGLE_DELTA_VU)
+      apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)
+      if abs(apply_angle - CS.out.steeringAngleDeg) > 8:
+        rate_limit = 0.2
+        self.last_apply_angle = CS.out.steeringAngleDeg
+        apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)
 
-      apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit) 
+       
       if Params().get_bool('spasAlways'):
         apply_angle = apply_angle * interp(CS.out.vEgo, SPEED, RATIO)
       self.last_apply_angle = apply_angle
@@ -151,8 +156,7 @@ class CarController():
       if enabled and TQ <= CS.out.steeringWheelTorque <= -TQ:
         spas_active = False
         lkas_active = False
-      if abs(apply_angle - CS.out.steeringAngleDeg) > 12:
-        spas_active = False
+      if abs(apply_angle - CS.out.steeringAngleDeg) > 8:
         self.assist = True
       else:
         self.assist = False
