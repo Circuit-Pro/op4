@@ -153,6 +153,7 @@ class CarController():
         lkas_active = False
       if abs(apply_angle - CS.out.steeringAngleDeg) > 8:
         spas_active = False
+        lkas_active = True
         self.assist = True
       else:
         self.assist = False
