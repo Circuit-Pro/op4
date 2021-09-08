@@ -1,7 +1,6 @@
 Version 0.8.8 (2021-08-XX)
 ========================
-* EMS11 Implemented.
-  * SPAS Debugging toggle outputs debug info to "tmux a".
+* May have fixed upwind swing needs more testing.
 * OpenPilot now correctly reads and handles all SPAS states
 * Fixed SPAS.
 * Fixed SPAS to KLAS switch. 
