@@ -153,17 +153,12 @@ class CarController():
 
     if CS.spas_enabled:
       if enabled and TQ <= CS.out.steeringWheelTorque <= -TQ:
-        override = True
-      else:
-        override = False
-      if override:
         spas_active = False
         lkas_active = False
       if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
         self.assist = True
       else:
         self.assist = False
-      self.override = override
 
     UseSMDPS = Params().get_bool('UseSMDPSHarness')
     if Params().get_bool('LongControlEnabled'):
