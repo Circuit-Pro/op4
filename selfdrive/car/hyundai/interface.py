@@ -620,7 +620,6 @@ class CarInterface(CarInterfaceBase):
       if self.CC.assist:
         events.add(EventName.assist)
 
-
       if self.CS.mdps11_stat == 6 or self.CS.mdps11_stat == 8:
         events.add(EventName.steerTempUnavailable)
 
