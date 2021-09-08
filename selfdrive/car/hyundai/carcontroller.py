@@ -148,9 +148,15 @@ class CarController():
     lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active
 
     if CS.spas_enabled:
-      if enabled and TQ <= CS.out.steeringWheelTorque <= -TQ:
-        spas_active = False
-      elif abs(apply_angle - CS.out.steeringAngleDeg) > 8:
+      if abs(apply_angle) > 10:
+        if enabled and abs(CS.out.steeringWheelTorque) >= TQ + 5:
+          spas_active = False
+          lkas_active = False
+      if abs(apply_angle) < 10:
+        if enabled and abs(CS.out.steeringWheelTorque) >= TQ:
+          spas_active = False
+          lkas_active = False
+      if abs(apply_angle - CS.out.steeringAngleDeg) > 8:
         spas_active = False
         self.assist = True
       else:
