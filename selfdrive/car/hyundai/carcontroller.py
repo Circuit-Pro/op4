@@ -102,7 +102,7 @@ class CarController():
       self.spas_active = False
       self.spas_active_last = 0
       self.assist = False
-      self.TQ = TQ
+      self.override = False
       
     self.ldws_opt = Params().get_bool('IsLdwsCar')
     self.stock_navi_decel_enabled = Params().get_bool('StockNaviDecelEnabled')
@@ -153,6 +153,10 @@ class CarController():
 
     if CS.spas_enabled:
       if enabled and TQ <= CS.out.steeringWheelTorque <= -TQ:
+        self.override = True
+      else:
+        self.override = False
+      if self.override:
         spas_active = False
         lkas_active = False
       if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
