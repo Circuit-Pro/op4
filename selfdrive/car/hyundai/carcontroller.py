@@ -139,7 +139,7 @@ class CarController():
         rate_limit = interp(CS.out.vEgo, ANGLE_DELTA_BP, ANGLE_DELTA_VU)
       apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)
       if abs(apply_angle - CS.out.steeringAngleDeg) > 3: # Rate limit for when steering angle is far from apply_angle - JPR
-        rate_limit = 0.4
+        rate_limit = 0.8
         self.last_apply_angle = CS.out.steeringAngleDeg
         apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)
 
