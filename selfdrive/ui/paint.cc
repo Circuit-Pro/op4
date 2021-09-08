@@ -1203,7 +1203,7 @@ static void ui_draw_vision_bsd_right(UIState *s) {
 // tpms display by openpilotusers
 static void ui_draw_tpms(UIState *s) {
   int tpms_x = s->fb_w - 490;
-  int tpms_y = 865;
+  int tpms_y = 845;
   int tpms_w = 240;
   int tpms_h = 160;
   char tpmsFl[32];
