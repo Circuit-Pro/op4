@@ -101,6 +101,8 @@ class CarController():
       self.lkas_active = False
       self.spas_active = False
       self.spas_active_last = 0
+      self.assist = False
+      self.override = False
       
     self.ldws_opt = Params().get_bool('IsLdwsCar')
     self.stock_navi_decel_enabled = Params().get_bool('StockNaviDecelEnabled')
@@ -148,10 +150,13 @@ class CarController():
     if CS.spas_enabled:
       if enabled and TQ <= CS.out.steeringWheelTorque <= -TQ:
         spas_active = False
-        lkas_active = False
-        apply_steer = 0
+        self.override = True
       elif abs(apply_angle - CS.out.steeringAngleDeg) > 8:
         spas_active = False
+        self.assist = True
+      else:
+        self.assist = False
+        self.override = False
 
     UseSMDPS = Params().get_bool('UseSMDPSHarness')
     if Params().get_bool('LongControlEnabled'):
@@ -177,7 +182,6 @@ class CarController():
     if CS.out.leftBlinker or CS.out.rightBlinker:
       self.turning_signal_timer = 1.0 / DT_CTRL  # Disable for 1.0 Seconds after blinker turned off
     if self.turning_indicator_alert and enabled: # set and clear by interface
-      apply_steer = 0
       lkas_active = False
       spas_active = False
 
