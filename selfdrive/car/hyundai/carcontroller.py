@@ -182,9 +182,6 @@ class CarController():
       spas_active = False
 
     if not lkas_active:
-      CS.steeringPressed = True
-      apply_steer = 0
-    if lkas_active and self.spas_active_last: 
       apply_steer = 0
 
     self.lkas_active = lkas_active
