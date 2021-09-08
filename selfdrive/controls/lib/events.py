@@ -567,7 +567,16 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
       "User override or MDPS Fault",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimePrompt, 1., 1., 1.),
-      ET.NO_ENTRY: NoEntryAlert("MDPS State 7: User override or fault."),  },
+      ET.NO_ENTRY: NoEntryAlert("MDPS State 7: User override or fault."),
+      },
+
+  EventName.assist: {
+    ET.WARNING: Alert(
+      "Assist Steering Wheel",
+      "Too Far From Requested Angle",
+      AlertStatus.userPrompt, AlertSize.mid,
+      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimePrompt, 1., 1., 1.),
+      },
 
   # Thrown when the fan is driven at >50% but is not rotating
   EventName.fanMalfunction: {
