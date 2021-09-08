@@ -156,7 +156,7 @@ class CarController():
       if enabled and TQ <= CS.out.steeringWheelTorque <= -TQ:
         spas_active = False
         lkas_active = False
-      if abs(apply_angle - CS.out.steeringAngleDeg) > 8:
+      if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
         self.assist = True
       else:
         self.assist = False
