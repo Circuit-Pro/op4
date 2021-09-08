@@ -150,15 +150,18 @@ class CarController():
     spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_always
   
     lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active
-
+    events = self.create_common_events(self)
     if CS.spas_enabled:
       if enabled and TQ <= CS.out.steeringWheelTorque <= -TQ:
         spas_active = False
         lkas_active = False
+        events.add(EventName.buttonCancel)
       if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
         self.assist = True
       else:
         self.assist = False
+    
+    self.events = events.to_msg()
 
     UseSMDPS = Params().get_bool('UseSMDPSHarness')
     if Params().get_bool('LongControlEnabled'):
