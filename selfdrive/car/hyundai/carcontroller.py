@@ -156,9 +156,9 @@ class CarController():
         self.override = True
       else:
         self.override = False
-      if self.override:
-        spas_active = False
-        lkas_active = False
+      #if self.override:
+        #spas_active = False
+        #lkas_active = False
       if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
         self.assist = True
       else:
