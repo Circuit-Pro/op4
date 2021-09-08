@@ -615,7 +615,7 @@ class CarInterface(CarInterfaceBase):
         if not self.CC.lkas_active and self.CC.spas_active: # We need to alert driver when SPAS abort or fail.
           events.add(EventName.steerSaturated)
 
-        if self.CC.TQ <= self.CS.out.steeringWheelTorque <= -self.CC.TQ and self.CS.mdps11_stat == 7 and not self.CC.turning_indicator_alert:
+        if self.CC.TQ <= self.CS.out.steeringWheelTorque <= -self.CC.TQ and not self.CC.turning_indicator_alert:
           events.add(EventName.buttonCancel)
       
       if self.CC.assist:
