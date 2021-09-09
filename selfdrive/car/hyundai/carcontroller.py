@@ -182,8 +182,7 @@ class CarController():
     if self.turning_indicator_alert and enabled: # set and clear by interface
       lkas_active = False
       spas_active = False
-    else:
-      spas_active = True
+
 
     if not lkas_active:
       apply_steer = 0
