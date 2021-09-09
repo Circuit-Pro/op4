@@ -147,7 +147,7 @@ class CarController():
         apply_angle = apply_angle * interp(CS.out.vEgo, SPEED, RATIO)
       self.last_apply_angle = apply_angle
 
-    spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH and not TQ <= CS.out.steeringWheelTorque <= -TQ or CS.spas_enabled and enabled and self.spas_always and not TQ <= CS.out.steeringWheelTorque <= -TQ
+    spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_always 
   
     lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active and not TQ <= CS.out.steeringWheelTorque <= -TQ
 
@@ -185,6 +185,10 @@ class CarController():
 
     if not lkas_active:
       apply_steer = 0
+
+    if TQ <= CS.out.steeringWheelTorque <= -TQ:
+      lkas_active = False
+      spas_active = False
 
     self.lkas_active = lkas_active
     self.spas_active = spas_active
