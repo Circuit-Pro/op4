@@ -25,7 +25,7 @@ STEER_ANG_MAX = 350         # SPAS Max Angle
 ANGLE_DELTA_BP = [0., 5., 15.]
 ANGLE_DELTA_V = [0.8, 0.5, 0.2]     # windup limit
 ANGLE_DELTA_VU = [1.0, 0.8, 0.3]   # unwind limit
-TQ = 1.5 # = 1 NM * 100 is unit of measure for wheel.
+TQ = 50 # = 1 NM * 100 is unit of measure for wheel.
 SPAS_SWITCH = 38 * CV.MPH_TO_MS #MPH
 #Try to fix OpenPilot wobble of SPAS at speed.
 SPEED = [0., 10., 20., 30., 40.]
