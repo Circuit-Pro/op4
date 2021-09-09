@@ -1,6 +1,8 @@
 Version 0.8.8 (2021-08-XX)
 ========================
-* May have fixed upwind swing needs more testing.
+* Added enable rate limit to get rid of rapid jerk to posistion and removed assist steering warning when angle is too far from apply_angle.
+* Fixed Override.
+* Fixed upwind swing needs more testing.
 * OpenPilot now correctly reads and handles all SPAS states
 * Fixed SPAS.
 * Fixed SPAS to KLAS switch. 
