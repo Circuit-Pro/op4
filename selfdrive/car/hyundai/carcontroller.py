@@ -186,9 +186,10 @@ class CarController():
     if not lkas_active:
       apply_steer = 0
 
-    if TQ <= CS.out.steeringWheelTorque <= -TQ:
+    if TQ < CS.out.steeringWheelTorque < -TQ:
       lkas_active = False
       spas_active = False
+      print("OVERRIDE")
 
     self.lkas_active = lkas_active
     self.spas_active = spas_active
