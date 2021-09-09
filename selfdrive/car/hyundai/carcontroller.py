@@ -147,18 +147,14 @@ class CarController():
         apply_angle = apply_angle * interp(CS.out.vEgo, SPEED, RATIO)
       self.last_apply_angle = apply_angle
 
-    spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_always
+    spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_always and not TQ <= CS.out.steeringWheelTorque <= -TQ
   
-    lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active
+    lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active and not TQ <= CS.out.steeringWheelTorque <= -TQ
 
-    if CS.spas_enabled:
-      if enabled and TQ <= CS.out.steeringWheelTorque <= -TQ:
-        spas_active = False
-        lkas_active = False
-      if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
-        self.assist = True
-      else:
-        self.assist = False
+    if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
+      self.assist = True
+    else:
+      self.assist = False
 
     UseSMDPS = Params().get_bool('UseSMDPSHarness')
     if Params().get_bool('LongControlEnabled'):
