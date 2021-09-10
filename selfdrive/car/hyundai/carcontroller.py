@@ -367,8 +367,7 @@ class CarController():
           else:
             spas_active_stat = False
         can_sends.append(create_ems_366(self.packer, CS.ems_366, spas_active_stat))
-        if Params().get_bool('SPASDebug'):
-            print("EMS366")
+
 
       if (frame % 2) == 0:
         if CS.mdps11_stat == 7:
@@ -378,17 +377,6 @@ class CarController():
           self.en_spas = 3
           if CS.mdps11_stat == 3:
             self.en_spas = 2
-            if CS.mdps11_stat == 2:
-              self.en_spas = 3
-              if CS.mdps11_stat == 3:
-                self.en_spas = 4
-                if CS.mdps11_stat == 3 and self.en_spas == 4:
-                  self.en_spas = 3  
-
-        if CS.mdps11_stat == 3 and spas_active:
-          self.en_spas = 4
-          if CS.mdps11_stat == 4:
-            self.en_spas = 5
           
         if CS.mdps11_stat == 2 and spas_active:
           self.en_spas = 3 # Switch to State 3, and get Ready to Assist(Steer). JPR
@@ -423,5 +411,7 @@ class CarController():
           print("spas_active:", spas_active)
           print("lkas_active:", lkas_active)
           print("driver torque:", CS.out.steeringWheelTorque)
+          if Params().get_bool('SPASDebug'):
+            print("EMS366")
     self.spas_active_last = spas_active
     return can_sends
