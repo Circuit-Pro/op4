@@ -155,7 +155,26 @@ class CarController():
       self.assist = True
     else:
       self.assist = False
+      
+    # Disable steering while turning blinker on and speed below 60 kph
+    if CS.out.leftBlinker or CS.out.rightBlinker:
+      self.turning_signal_timer = 1.0 / DT_CTRL  # Disable for 1.0 Seconds after blinker turned off
+    if self.turning_indicator_alert and enabled: # set and clear by interface
+      lkas_active = False
+      spas_active = False
 
+    if not lkas_active:
+      apply_steer = 0
+
+    if TQ <= CS.out.steeringWheelTorque <= -TQ:
+      lkas_active = False
+      spas_active = False
+
+    self.lkas_active = lkas_active
+    self.spas_active = spas_active
+
+    if self.turning_signal_timer > 0:
+      self.turning_signal_timer -= 1  
     UseSMDPS = Params().get_bool('UseSMDPSHarness')
     if Params().get_bool('LongControlEnabled'):
       min_set_speed = 0 * CV.KPH_TO_MS
@@ -176,27 +195,6 @@ class CarController():
         lkas_active = False
         min_set_speed = 30 * CV.KPH_TO_MS
 
-    # Disable steering while turning blinker on and speed below 60 kph
-    if CS.out.leftBlinker or CS.out.rightBlinker:
-      self.turning_signal_timer = 1.0 / DT_CTRL  # Disable for 1.0 Seconds after blinker turned off
-    if self.turning_indicator_alert and enabled: # set and clear by interface
-      lkas_active = False
-      spas_active = False
-
-
-    if not lkas_active:
-      apply_steer = 0
-
-    if abs(CS.out.steeringWheelTorque) > TQ:
-      lkas_active = False
-      spas_active = False
-      print("OVERRIDE")
-
-    self.lkas_active = lkas_active
-    self.spas_active = spas_active
-
-    if self.turning_signal_timer > 0:
-      self.turning_signal_timer -= 1  
 
     self.apply_accel_last = apply_accel
     self.apply_steer_last = apply_steer
