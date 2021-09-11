@@ -1,4 +1,7 @@
 
+from common.numpy_fast import clip
+import numpy as np
+import os
 from cereal import car
 from common.realtime import DT_CTRL
 from common.numpy_fast import clip
@@ -87,7 +90,7 @@ class CarController():
     # *** compute control surfaces ***
 
     # gas and brake
-    apply_accel = actuators.gas - actuators.brake
+    apply_accel = actuators.accel / CarControllerParams.ACCEL_SCALE
     apply_accel, self.accel_steady = accel_hysteresis(apply_accel, self.accel_steady)
     apply_accel = self.scc_smoother.get_accel(CS, controls.sm, apply_accel)
     apply_accel = clip(apply_accel * CarControllerParams.ACCEL_SCALE,

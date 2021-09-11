@@ -1,12 +1,13 @@
-import numpy as np
+from selfdrive.car.hyundai.interface import CarInterface
 import time
-from common.numpy_fast import interp
 from enum import IntEnum
-from cereal import log, car
+import numpy as np
+from cereal import car, log
+from common.numpy_fast import interp
 from common.params import Params
 from common.realtime import sec_since_boot
 from selfdrive.controls.lib.events import Events
-
+from selfdrive.car.hyundai import interface
 
 _PARAMS_UPDATE_PERIOD = 2.  # secs. Time between parameter updates.
 _WAIT_TIME_LIMIT_RISE = 2.0  # Waiting time before raising the speed limit.
@@ -331,6 +332,12 @@ class SpeedLimitController():
     #if self._v_cruise_setpoint_changed:
     #  self.state = SpeedLimitControlState.tempInactive
     #  return
+
+    # Check to see if lkas button on HKG was pressed - JPR
+    #if not interface.CarInterface.speed_limit:
+    #  self.state = SpeedLimitControlState.tempInactive
+    #if interface.CarInterface.speed_limit:
+     # self.state == SpeedLimitControlState.active
 
     # inactive
     if self.state == SpeedLimitControlState.inactive:

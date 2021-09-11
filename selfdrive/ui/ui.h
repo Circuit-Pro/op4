@@ -143,7 +143,9 @@ typedef struct UIScene {
   bool leftBlinker, rightBlinker;
   bool leftblindspot, rightblindspot;
   int blinker_blinkingrate;
-  
+  float tpmsFl, tpmsFr, tpmsRl, tpmsRr;
+  bool ui_tpms;
+
     // Debug UI
   bool show_debug_ui;
 
@@ -155,6 +157,7 @@ typedef struct UIScene {
 
   cereal::PandaState::PandaType pandaType;
   cereal::CarState::Reader car_state;
+  cereal::ControlsState::Reader controls_state;
   // modelV2
   float lane_line_probs[4];
   float road_edge_stds[2];

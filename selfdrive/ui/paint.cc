@@ -616,15 +616,15 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     char uom_str[6];
     NVGcolor val_color = nvgRGBA(255, 255, 255, 200);
 
-    if(ambientTemp > 40.f) {
+    if(ambientTemp > 50.f) {
       val_color = nvgRGBA(255, 188, 3, 200);
     }
-    if(ambientTemp > 50.f) {
+    if(ambientTemp > 60.f) {
       val_color = nvgRGBA(255, 0, 0, 200);
     }
     snprintf(val_str, sizeof(val_str), "%.1f°", ambientTemp);
     snprintf(uom_str, sizeof(uom_str), "");
-    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "PCB Temp",
+    bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "AMBIENT",
         bb_rx, bb_ry, bb_uom_dx,
         val_color, lab_color, uom_color,
         value_fontSize, label_fontSize, uom_fontSize );
@@ -781,8 +781,7 @@ static void bb_ui_draw_debug(UIState *s)
     float upAccelCmd = controls_state.getUpAccelCmd();
     float uiAccelCmd = controls_state.getUiAccelCmd();
     float ufAccelCmd = controls_state.getUfAccelCmd();
-    float gas = car_control.getActuators().getGas();
-    float brake = car_control.getActuators().getBrake();
+    float accel = car_control.getActuators().getAccel();
 
     const char* long_state[] = {"off", "pid", "stopping", "starting"};
 
@@ -809,11 +808,11 @@ static void bb_ui_draw_debug(UIState *s)
     ui_draw_text(s, text_x, y, str, 22 * 2.5, textColor, "sans-regular");
 
     y += height;
-    snprintf(str, sizeof(str), "Gas: %.3f, Brake: %.3f", gas, brake);
+    snprintf(str, sizeof(str), "Accel: %.3f", accel);
     ui_draw_text(s, text_x, y, str, 22 * 2.5, textColor, "sans-regular");
 
     y += height;
-    snprintf(str, sizeof(str), "Accel: %.3f/%.3f", applyAccel, aReqValue);
+    snprintf(str, sizeof(str), "Apply Accel: %.3f, Stock Accel: %.3f", applyAccel, aReqValue);
     ui_draw_text(s, text_x, y, str, 22 * 2.5, textColor, "sans-regular");
 
     y += height;
@@ -832,13 +831,11 @@ static void bb_ui_draw_debug(UIState *s)
     auto lead_one = (*s->sm)["modelV2"].getModelV2().getLeadsV3()[0];
 
     float radar_dist = lead_radar.getStatus() && lead_radar.getRadar() ? lead_radar.getDRel() : 0;
-    float vision_dist = lead_one.getProb() > .5 ? lead_one.getX()[0] : 0;
+    float vision_dist = lead_one.getProb() > .5 ? (lead_one.getX()[0] - 1.5) : 0;
 
     y += height;
     snprintf(str, sizeof(str), "Lead: %.1f/%.1f/%.1f", radar_dist, vision_dist, (radar_dist - vision_dist));
     ui_draw_text(s, text_x, y, str, 22 * 2.5, textColor, "sans-regular");
-
-
 }
 
 
@@ -1063,9 +1060,10 @@ static void ui_draw_vision_speed(UIState *s) {
   ui_draw_text(s, s->fb_w/2, 290, s->scene.is_metric ? "km/h" : "mph", 36 * 2.5, COLOR_WHITE_ALPHA(200), "sans-regular");
 
   // turning blinker sequential crwusiz / mod by arne-fork Togo
-  const int viz_blinker_w = 280;
-  const int viz_blinker_x = s->fb_w/2 - 140;
-  const int viz_add = 50;
+  const int blinker_w = 280;
+  const int blinker_x = s->fb_w/2 - 140;
+  const int pos_add = 50;
+  bool is_warning = (s->status == STATUS_WARNING);
 
   if(s->scene.leftBlinker || s->scene.rightBlinker) {
     s->scene.blinker_blinkingrate -= 5;
@@ -1082,20 +1080,28 @@ static void ui_draw_vision_speed(UIState *s) {
 
     if(s->scene.leftBlinker) {
       nvgBeginPath(s->vg);
-      nvgMoveTo(s->vg, viz_blinker_x - (viz_add*offset)                    , s->viz_rect.y + (header_h/4.2));
-      nvgLineTo(s->vg, viz_blinker_x - (viz_add*offset) - (viz_blinker_w/2), s->viz_rect.y + (header_h/2.1));
-      nvgLineTo(s->vg, viz_blinker_x - (viz_add*offset)                    , s->viz_rect.y + (header_h/1.4));
+      nvgMoveTo(s->vg, blinker_x - (pos_add*offset)                    ,(header_h/4.2));
+      nvgLineTo(s->vg, blinker_x - (pos_add*offset) - (blinker_w/2),(header_h/2.1));
+      nvgLineTo(s->vg, blinker_x - (pos_add*offset)                    ,(header_h/1.4));
       nvgClosePath(s->vg);
-      nvgFillColor(s->vg, COLOR_WARNING_ALPHA(180 * alpha));
+      if (is_warning) {
+        nvgFillColor(s->vg, COLOR_WARNING_ALPHA(180 * alpha));
+      } else {
+        nvgFillColor(s->vg, COLOR_ENGAGED_ALPHA(180 * alpha));
+      }
       nvgFill(s->vg);
     }
     if(s->scene.rightBlinker) {
       nvgBeginPath(s->vg);
-      nvgMoveTo(s->vg, viz_blinker_x + (viz_add*offset) + viz_blinker_w      , s->viz_rect.y + (header_h/4.2));
-      nvgLineTo(s->vg, viz_blinker_x + (viz_add*offset) + (viz_blinker_w*1.5), s->viz_rect.y + (header_h/2.1));
-      nvgLineTo(s->vg, viz_blinker_x + (viz_add*offset) + viz_blinker_w      , s->viz_rect.y + (header_h/1.4));
+      nvgMoveTo(s->vg, blinker_x + (pos_add*offset) + blinker_w      ,(header_h/4.2));
+      nvgLineTo(s->vg, blinker_x + (pos_add*offset) + (blinker_w*1.5),(header_h/2.1));
+      nvgLineTo(s->vg, blinker_x + (pos_add*offset) + blinker_w      ,(header_h/1.4));
       nvgClosePath(s->vg);
-      nvgFillColor(s->vg, COLOR_WARNING_ALPHA(180 * alpha));
+      if (is_warning) {
+        nvgFillColor(s->vg, COLOR_WARNING_ALPHA(180 * alpha));
+      } else {
+        nvgFillColor(s->vg, COLOR_ENGAGED_ALPHA(180 * alpha));
+      }
       nvgFill(s->vg);
     }
   }
@@ -1103,13 +1109,42 @@ static void ui_draw_vision_speed(UIState *s) {
 
 static void ui_draw_vision_event(UIState *s) {
   if (s->scene.engageable) {
-    // draw steering wheel
+    // draw steering wheel, bdr_s=10,
+    float angleSteers = s->scene.car_state.getSteeringAngleDeg();
+    int steerOverride = s->scene.car_state.getSteeringPressed();
     const int radius = 96;
-    const int center_x = s->viz_rect.right() - radius - bdr_s * 2;
-    const int center_y = s->viz_rect.y + radius  + (bdr_s * 1.5);
-    const QColor &color = bg_colors[s->status];
-    NVGcolor nvg_color = nvgRGBA(color.red(), color.green(), color.blue(), color.alpha());
-    ui_draw_circle_image(s, center_x, center_y, radius, "wheel", nvg_color, 1.0f);
+    const int center_x = s->fb_w - radius;
+    const int center_y = radius;
+    const int bg_wheel_x = center_x - (bdr_s*3);
+    const int bg_wheel_y = center_y + (bdr_s*3);
+    const int img_wheel_size = radius + 54; // wheel_size = 150
+    const int img_wheel_x = bg_wheel_x - (img_wheel_size/2);
+    const int img_wheel_y = bg_wheel_y - (img_wheel_size/2);
+    const float img_rotation = angleSteers/180*3.141592;
+    bool is_engaged = (s->status == STATUS_ENGAGED) && ! steerOverride;
+    bool is_warning = (s->status == STATUS_WARNING);
+    bool is_engageable = s->scene.controls_state.getEngageable();
+    if (is_engaged || is_warning || is_engageable) {
+      nvgBeginPath(s->vg);
+      nvgCircle(s->vg, bg_wheel_x, bg_wheel_y, radius); // circle_size = 96
+      if (is_engaged) {
+        nvgFillColor(s->vg, COLOR_ENGAGED_ALPHA(120));
+      } else if (is_warning) {
+        nvgFillColor(s->vg, COLOR_WARNING_ALPHA(120));
+      } else if (is_engageable) {
+        nvgFillColor(s->vg, COLOR_ENGAGEABLE_ALPHA(120));
+      }
+      nvgFill(s->vg);
+    }
+    nvgSave(s->vg);
+    nvgTranslate(s->vg, bg_wheel_x, bg_wheel_y);
+    nvgRotate(s->vg,-img_rotation);
+    nvgBeginPath(s->vg);
+    NVGpaint imgPaint = nvgImagePattern(s->vg, img_wheel_x - bg_wheel_x, img_wheel_y - bg_wheel_y, img_wheel_size, img_wheel_size, 0, s->images["wheel"], 1.0f);
+    nvgRect(s->vg, img_wheel_x - bg_wheel_x, img_wheel_y - bg_wheel_y, img_wheel_size, img_wheel_size);
+    nvgFillPaint(s->vg, imgPaint);
+    nvgFill(s->vg);
+    nvgRestore(s->vg);
   }
   auto longitudinal_plan = (*s->sm)["longitudinalPlan"].getLongitudinalPlan();
   auto visionTurnControllerState = longitudinal_plan.getVisionTurnControllerState();
@@ -1132,6 +1167,18 @@ static void ui_draw_vision_event(UIState *s) {
 }
 }
 
+static void ui_draw_gps(UIState *s) {
+  const int radius = 60;
+  const int gps_x = s->fb_w - (radius*5);
+  const int gps_y = radius + 40;
+  auto gps_state = (*s->sm)["liveLocationKalman"].getLiveLocationKalman();
+  if (gps_state.getGpsOK()) {
+    ui_draw_circle_image(s, gps_x, gps_y, radius, "gps", COLOR_BLACK_ALPHA(30), 1.0f);
+  } else {
+    ui_draw_circle_image(s, gps_x, gps_y, radius, "gps", COLOR_BLACK_ALPHA(10), 0.15f);
+  }
+}
+
 static void ui_draw_vision_face(UIState *s) {
   const int radius = 96;
   const int center_x = s->viz_rect.x + radius + (bdr_s * 2);
@@ -1152,6 +1199,63 @@ static void ui_draw_vision_bsd_right(UIState *s) {
   const int bsd_y = (s->fb_h - footer_h * 1.8);
   ui_draw_circle_image(s, bsd_x + (radius*2), bsd_y - (radius*2), radius, "bsd_r", s->scene.car_state.getRightBlindspot());
 }
+
+// tpms display by openpilotusers
+static void ui_draw_tpms(UIState *s) {
+  int tpms_x = s->fb_w - 490;
+  int tpms_y = 845;
+  int tpms_w = 240;
+  int tpms_h = 160;
+  char tpmsFl[32];
+  char tpmsFr[32];
+  char tpmsRl[32];
+  char tpmsRr[32];
+
+  // Draw Border
+  const Rect rect = {tpms_x, tpms_y, tpms_w, tpms_h};
+  ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(80), 5, 20);
+  nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
+  const int pos_x = tpms_x + (tpms_w/2);
+  const int pos_y = 945;
+  const int pos_add = 50;
+  const int fontsize = 60;
+
+  ui_draw_text(s, pos_x, pos_y+pos_add, "TPMS (psi)", fontsize-20, COLOR_WHITE_ALPHA(200), "sans-regular");
+  snprintf(tpmsFl, sizeof(tpmsFl), "%.0f", s->scene.tpmsFl);
+  snprintf(tpmsFr, sizeof(tpmsFr), "%.0f", s->scene.tpmsFr);
+  snprintf(tpmsRl, sizeof(tpmsRl), "%.0f", s->scene.tpmsRl);
+  snprintf(tpmsRr, sizeof(tpmsRr), "%.0f", s->scene.tpmsRr);
+
+  if (s->scene.tpmsFl < 34) {
+    ui_draw_text(s, pos_x - pos_add, pos_y-pos_add, tpmsFl, fontsize, COLOR_RED_ALPHA(200), "sans-bold");
+  } else if (s->scene.tpmsFl > 50) {
+    ui_draw_text(s, pos_x - pos_add, pos_y-pos_add, "-", fontsize, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  } else {
+    ui_draw_text(s, pos_x - pos_add, pos_y-pos_add, tpmsFl, fontsize, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  }
+  if (s->scene.tpmsFr < 34) {
+    ui_draw_text(s, pos_x + pos_add, pos_y-pos_add, tpmsFr, fontsize, COLOR_RED_ALPHA(200), "sans-bold");
+  } else if (s->scene.tpmsFr > 50) {
+    ui_draw_text(s, pos_x + pos_add, pos_y-pos_add, "-", fontsize, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  } else {
+    ui_draw_text(s, pos_x + pos_add, pos_y-pos_add, tpmsFr, fontsize, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  }
+  if (s->scene.tpmsRl < 34) {
+    ui_draw_text(s, pos_x - pos_add, pos_y, tpmsRl, fontsize, COLOR_RED_ALPHA(200), "sans-bold");
+  } else if (s->scene.tpmsRl > 50) {
+    ui_draw_text(s, pos_x - pos_add, pos_y, "-", fontsize, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  } else {
+    ui_draw_text(s, pos_x - pos_add, pos_y, tpmsRl, fontsize, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  }
+  if (s->scene.tpmsRr < 34) {
+    ui_draw_text(s, pos_x + pos_add, pos_y, tpmsRr, fontsize, COLOR_RED_ALPHA(200), "sans-bold");
+  } else if (s->scene.tpmsRr > 50) {
+    ui_draw_text(s, pos_x + pos_add, pos_y, "-", fontsize, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  } else {
+    ui_draw_text(s, pos_x + pos_add, pos_y, tpmsRr, fontsize, COLOR_WHITE_ALPHA(200), "sans-semibold");
+  }
+}
+
 
 static void ui_draw_vision_header(UIState *s) {
   NVGpaint gradient = nvgLinearGradient(s->vg, s->viz_rect.x,
@@ -1201,6 +1305,8 @@ static void ui_draw_vision(UIState *s) {
   ui_draw_vision_autohold(s);
   ui_draw_vision_bsd_left(s);
   ui_draw_vision_bsd_right(s);
+  ui_draw_gps(s);
+  ui_draw_tpms(s);
 }
 static void ui_draw_background(UIState *s) {
   const QColor &color = bg_colors[s->status];
@@ -1328,14 +1434,14 @@ void ui_nvg_init(UIState *s) {
   {"turn_right_icon", "../assets/img_turn_right_icon.png"},
   {"bsd_l", "../assets/img_bsd_l.png"},
   {"bsd_r", "../assets/img_bsd_r.png"},
-	{"brake", "../assets/img_brake_disc.png"},
-	{"autohold_warning", "../assets/img_autohold_warning.png"},
-	{"autohold_active", "../assets/img_autohold_active.png"},
-	{"img_nda", "../assets/img_nda.png"},
-	{"img_hda", "../assets/img_hda.png"},
-
-	{"custom_lead_vision", "../assets/images/custom_lead_vision.png"},
-	{"custom_lead_radar", "../assets/images/custom_lead_radar.png"},
+  {"brake", "../assets/img_brake_disc.png"},
+  {"gps", "../assets/img_gps.png"},
+  {"autohold_warning", "../assets/img_autohold_warning.png"},
+  {"autohold_active", "../assets/img_autohold_active.png"},
+  {"img_nda", "../assets/img_nda.png"},
+  {"img_hda", "../assets/img_hda.png"},
+  {"custom_lead_vision", "../assets/images/custom_lead_vision.png"},
+  {"custom_lead_radar", "../assets/images/custom_lead_radar.png"},
   };
   for (auto [name, file] : images) {
     s->images[name] = nvgCreateImage(s->vg, file, 1);

@@ -146,6 +146,10 @@ static void update_state(UIState *s) {
     }
     scene.leftBlinker = scene.car_state.getLeftBlinker();
     scene.rightBlinker = scene.car_state.getRightBlinker();
+    scene.tpmsFl = scene.car_state.getTpmsFl();
+    scene.tpmsFr = scene.car_state.getTpmsFr();
+    scene.tpmsRl = scene.car_state.getTpmsRl();
+    scene.tpmsRr = scene.car_state.getTpmsRr();
   }
   
   // update engageability and DM icons at 2Hz
@@ -323,7 +327,7 @@ static void update_extras(UIState *s)
 
 
 #if UI_FEATURE_DASHCAM
-   if(s->awake)
+   if(s->awake && Hardware::EON())
    {
         int touch_x = -1, touch_y = -1;
         int touched = touch_poll(&(s->touch), &touch_x, &touch_y, 0);

@@ -9,8 +9,8 @@ class LatControlPID():
   def __init__(self, CP):
     self.pid = PIController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
                             (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
-                            ([0.], [CP.lateralTuning.pid.kf]),
-                            pos_limit=1.0, neg_limit=-1.0, sat_limit=CP.steerLimitTimer)
+                            k_f=CP.lateralTuning.pid.kf, pos_limit=1.0, neg_limit=-1.0,
+                            sat_limit=CP.steerLimitTimer)
 
   def reset(self):
     self.pid.reset()
@@ -23,6 +23,7 @@ class LatControlPID():
     angle_steers_des_no_offset = math.degrees(VM.get_steer_from_curvature(-desired_curvature, CS.vEgo))
     angle_steers_des = angle_steers_des_no_offset + params.angleOffsetDeg
 
+    pid_log.angleError = angle_steers_des - CS.steeringAngleDeg 
     if CS.vEgo < 0.3 or not active:
       output_steer = 0.0
       pid_log.active = False

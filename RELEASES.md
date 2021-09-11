@@ -1,5 +1,7 @@
 Version 0.8.9 (2021-09-XX)
 ========================
+ * New UI.
+ * Fixed missing toggles.
  * Fixed QR Code. 
  * Bug fixes.
  * Fixed Pull Hyundai Navigation Speed Limit.
@@ -146,8 +148,7 @@ Version 0.8.5 (2021-XX-XX)
  * NEOS 18 for comma two: update packages
  * AGNOS 1.3 for comma three: fix display init at high temperatures
  * Improved auto-exposure on comma three
- * Honda Accord 2021 support thanks to csouers!
- * Honda Accord Hybrid 2021 support thanks to csouers!
+ * Improved longitudinal control on Honda Nidec cars
  * Hyundai Kona Hybrid 2020 support thanks to haram-KONA!
  * Hyundai Sonata Hybrid 2021 support thanks to Matt-Wash-Burn!
  * Kia Niro Hybrid 2021 support thanks to tetious!
