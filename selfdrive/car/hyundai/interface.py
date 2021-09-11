@@ -577,6 +577,10 @@ class CarInterface(CarInterfaceBase):
       minTP = 30
     elif CAR.K5:
       minTP = 30
+    elif CAR.SPORTAGE:
+      minTP = 34
+    elif CAR.SPORTAGE_NOSCC:
+      minTP = 34
     elif CAR.FORTE:
       minTP = 30
     elif CAR.GENESIS:
