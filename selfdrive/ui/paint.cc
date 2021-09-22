@@ -1207,7 +1207,7 @@ static void ui_draw_vision(UIState *s) {
   ui_draw_vision_bsd_left(s);
   ui_draw_vision_bsd_right(s);
   ui_draw_gps(s);
-  ui_draw_tpms(s);
+
 
 #if UI_FEATURE_DASHCAM
    if(s->awake && Hardware::EON())
