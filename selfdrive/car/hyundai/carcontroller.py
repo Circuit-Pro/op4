@@ -376,7 +376,7 @@ class CarController():
             spas_active_stat = True
           else:
             spas_active_stat = False
-        if self.car_fingerprint == CAR.GENESIS or self.car_fingerprint == CAR.KONA or self.car_fingerprint == CAR.STINGER:
+        if self.car_fingerprint == CAR.GENESIS or self.car_fingerprint == CAR.GENESIS_G80 or self.car_fingerprint == CAR.GENESIS_G70 or self.car_fingerprint == CAR.KONA or self.car_fingerprint == CAR.STINGER:
           can_sends.append(create_ems_366(self.packer, CS.ems_366, spas_active_stat))
         elif self.car_fingerprint == CAR.KONA_EV or self.car_fingerprint == CAR.KONA_HEV or self.car_fingerprint == CAR.KIA_NIRO_HEV or self.car_fingerprint == CAR.IONIQ_HEV or self.car_fingerprint == CAR.SONATA21_HEV or self.car_fingerprint == CAR.IONIQ_EV_LTD or self.car_fingerprint == CAR.ELANTRA_HEV_2021:
           can_sends.append(create_eems11(self.packer, CS.eems11, spas_active_stat))
