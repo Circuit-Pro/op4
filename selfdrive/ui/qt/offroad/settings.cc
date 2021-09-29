@@ -662,6 +662,11 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             this));
 
 
+  toggles.append(new ParamControl("UseSMDPSHarness",
+                                            "Use SMDPS Harness",
+                                            "Use of MDPS Harness to enable openpilot steering down to 0 MPH",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
   toggles.append(new ParamControl("UseClusterSpeed",
                                             "Use Cluster Speed",
                                             "Use cluster speed instead of wheel speed.",
