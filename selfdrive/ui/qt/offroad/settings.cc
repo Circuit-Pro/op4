@@ -107,15 +107,15 @@ TogglesPanel::TogglesPanel(QWidget *parent) : QWidget(parent) {
                                   "Set speed limit slightly higher than actual speed limit for a more natural drive.",
                                   "../assets/offroad/icon_speed_limit.png",
                                   this));
-  toggles.append(new ParamControl("SpeedLimitDelayIncrease",
-                                  "Delay increase of speed limit",
-                                  "Delays the increase of the speed limit to give time to the driver to cancel the increase by changing cruise speed.",
-                                  "../assets/offroad/icon_speed_limit.png",
-                                  this));
   toggles.append(new ParamControl("TurnSpeedControl",
                                   "Enable Map Data Turn Control",
                                   "Use curvature info from map data to define speed limits to take turns ahead",
                                   "../assets/offroad/icon_openpilot.png",
+                                  this));
+  toggles.append(new ParamControl("ShowDebugUI",
+                                  "Show debug UI elements",
+                                  "Show UI elements that aid debugging.",
+                                  "../assets/offroad/icon_calibration.png",
                                   this));
 
 #ifdef ENABLE_MAPS
