@@ -117,8 +117,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     rr @112;
 
     speedLimitActive @113;
-    speedLimitDecrease @114;
-    speedLimitIncrease @115;
+    speedLimitValueChange @114;
     
     driverMonitorLowAccDEPRECATED @68;
     radarCanErrorDEPRECATED @15;
@@ -145,7 +144,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     autoLaneChange @107;
 
     slowingDownSpeed @108;
-    slowingDownSpeedSound @116;
+    slowingDownSpeedSound @115;
   }
 }
 
