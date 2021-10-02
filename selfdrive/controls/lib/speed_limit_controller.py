@@ -300,10 +300,11 @@ class SpeedLimitController():
     # In any case, we deactivate the speed limit controller temporarily if the user changes the cruise speed.
     # Ignore if a minimum ammount of time has not passed since activation. This is to prevent temp inactivations
     # due to controlsd logic changing cruise setpoint when going active.
-    if self._v_cruise_setpoint_changed and \
-       sec_since_boot() > (self._last_op_enabled_time + _TEMP_INACTIVE_GUARD_PERIOD):
-      self.state = SpeedLimitControlState.tempInactive
-      return
+    #JPR - Need to comment out due to scc smoother
+    #if self._v_cruise_setpoint_changed and \ 
+    #   sec_since_boot() > (self._last_op_enabled_time + _TEMP_INACTIVE_GUARD_PERIOD):
+    #  self.state = SpeedLimitControlState.tempInactive
+    #  return
 
     # inactive
     if self.state == SpeedLimitControlState.inactive:
