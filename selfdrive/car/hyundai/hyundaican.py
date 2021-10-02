@@ -208,6 +208,7 @@ def create_spas11(packer, car_fingerprint, frame, en_spas, apply_steer, bus):
 
 def create_spas12(bus):
   return [1268, 0, b"\x00\x00\x00\x00\x00\x00\x00\x00", bus]
+  
 def create_ems_366(packer, ems_366, enabled):
   values = ems_366
   if enabled:
