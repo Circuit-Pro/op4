@@ -607,7 +607,10 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
       AlertStatus.normal, AlertSize.small,
       Priority.LOW, VisualAlert.none, AudibleAlert.chimePrompt, 1., 0., 2.),
   },
-
+  
+  EventName.speedLimitValueChange: {
+    ET.WARNING: speed_limit_adjust_alert,
+  },
   # ********** events that affect controls state transitions **********
 
   EventName.pcmEnable: {
