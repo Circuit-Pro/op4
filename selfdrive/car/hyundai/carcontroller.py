@@ -146,15 +146,15 @@ class CarController():
       if Params().get_bool('spasAlways'):
         apply_angle = apply_angle * interp(CS.out.vEgo, SPEED, RATIO)
       self.last_apply_angle = apply_angle
-
-    spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_always 
+    if CS.spas_enabled:
+      spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_always 
   
-    lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active and not TQ <= CS.out.steeringWheelTorque <= -TQ
+      lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active and not TQ <= CS.out.steeringWheelTorque <= -TQ
 
-    if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
-      self.assist = True
-    else:
-      self.assist = False
+      if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
+        self.assist = True
+      else:
+        self.assist = False
       
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.out.leftBlinker or CS.out.rightBlinker:
