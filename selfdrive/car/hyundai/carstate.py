@@ -1,7 +1,9 @@
 from cereal import car
-from common.params import Params
-from opendbc.can.can_define import CANDefine
+from selfdrive.car.hyundai.values import DBC, STEER_THRESHOLD, FEATURES, CAR, HYBRID_CAR, EV_HYBRID_CAR
+from selfdrive.car.interfaces import CarStateBase
 from opendbc.can.parser import CANParser
+from opendbc.can.can_define import CANDefine
+from common.params import Params
 from selfdrive.car.hyundai.values import (CAR, DBC, EV_CAR, FEATURES,
                                           HYBRID_CAR, STEER_THRESHOLD)
 from selfdrive.car.interfaces import CarStateBase
@@ -48,7 +50,7 @@ class CarState(CarStateBase):
     self.standstill = False
     self.cruiseState_enabled = False
     self.cruiseState_speed = 0
-    self.spas_enabled = CP.spasEnabled
+
     self.use_cluster_speed = Params().get_bool('UseClusterSpeed')
     self.long_control_enabled = Params().get_bool('LongControlEnabled')
 
@@ -139,7 +141,7 @@ class CarState(CarStateBase):
 
     ret.gasPressed = cp.vl["TCS13"]["DriverOverride"] == 1
 
-    if self.CP.carFingerprint in (HYBRID_CAR | EV_CAR):
+    if self.CP.carFingerprint in EV_HYBRID_CAR:
       if self.CP.carFingerprint in HYBRID_CAR:
         ret.gas = cp.vl["E_EMS11"]["CR_Vcu_AccPedDep_Pos"] / 254.
       else:
@@ -165,6 +167,9 @@ class CarState(CarStateBase):
       ret.tpmsFr = cp.vl["TPMS11"]["PRESSURE_FR"] / 10 * 14.5038
       ret.tpmsRl = cp.vl["TPMS11"]["PRESSURE_RL"] / 10 * 14.5038
       ret.tpmsRr = cp.vl["TPMS11"]["PRESSURE_RR"] / 10 * 14.5038
+
+    ret.cruiseState.speedLimit = cp.vl["Navi_HU"]["SpeedLim_Nav_Clu"] * 0.62137119223733 if Params().get_bool("HyundaiNaviSL") else 0.
+
 
     #Parking Sensors - JPR
     #ret.ParkFrontRight = cp.vl["PAS11"]["CF_Gway_PASDisplayFLH"]
@@ -213,18 +218,11 @@ class CarState(CarStateBase):
     self.cruise_unavail_cnt += 1 if cp.vl["TCS13"]['CF_VSM_Avail'] != 1 and cp.vl["TCS13"]['ACCEnable'] != 0 else -self.cruise_unavail_cnt
     self.cruise_unavail = self.cruise_unavail_cnt > 100
 
-    if self.spas_enabled:
-      self.ems_366 = cp.vl["EMS_366"]
-
     self.lead_distance = cp_scc.vl["SCC11"]['ACC_ObjDist'] if not self.no_radar else 0
     if self.has_scc13:
       self.scc13 = cp_scc.vl["SCC13"]
     if self.has_scc14:
       self.scc14 = cp_scc.vl["SCC14"]
-    if self.spas_enabled:
-      self.ems11 = cp.vl["EMS11"]
-      self.mdps11_strang = cp_mdps.vl["MDPS11"]["CR_Mdps_StrAng"]
-      self.mdps11_stat = cp_mdps.vl["MDPS11"]["CF_Mdps_Stat"]
 
     self.lkas_error = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] == 7
     if not self.lkas_error and self.car_fingerprint not in [CAR.SONATA,CAR.PALISADE,
@@ -242,6 +240,13 @@ class CarState(CarStateBase):
     self.cruiseState_enabled = ret.cruiseState.enabled
     self.cruiseState_speed = ret.cruiseState.speed
     ret.cruiseGap = self.cruise_gap
+
+    tpms_unit = cp.vl["TPMS11"]["UNIT"] * 0.725 if int(cp.vl["TPMS11"]["UNIT"]) > 0 else 1.
+    ret.tpms.fl = tpms_unit * cp.vl["TPMS11"]["PRESSURE_FL"]
+    ret.tpms.fr = tpms_unit * cp.vl["TPMS11"]["PRESSURE_FR"]
+    ret.tpms.rl = tpms_unit * cp.vl["TPMS11"]["PRESSURE_RL"]
+    ret.tpms.rr = tpms_unit * cp.vl["TPMS11"]["PRESSURE_RR"]
+
     return ret
 
   @staticmethod
@@ -464,7 +469,7 @@ class CarState(CarStateBase):
         ("CF_Lvr_Gear","LVR12",0),
       ]
 
-    if CP.carFingerprint in (HYBRID_CAR | EV_CAR):
+    if CP.carFingerprint in EV_HYBRID_CAR:
       if CP.carFingerprint in HYBRID_CAR:
         signals += [
           ("CR_Vcu_AccPedDep_Pos", "E_EMS11", 0)
@@ -492,8 +497,8 @@ class CarState(CarStateBase):
         ("FCA_CmdAct", "FCA11", 0),
         ("CF_VSM_Warn", "FCA11", 0),
       ]
-      if not CP.openpilotLongitudinalControl:
-        checks += [("FCA11", 50)]
+      # if not CP.openpilotLongitudinalControl:
+      #   checks += [("FCA11", 50)]
 
     if CP.carFingerprint in [CAR.SANTA_FE]:
       checks.remove(("TCS13", 50))
@@ -512,21 +517,15 @@ class CarState(CarStateBase):
         ("LDM_STAT", "ESP11", 0),
       ]
       checks += [("ESP11", 50)]
-    if CP.spasEnabled:
-      if CP.mdpsBus == 1:
-        signals += [
-          ("TQI_1", "EMS_366", 0),
-          ("N", "EMS_366", 0),
-          ("TQI_2", "EMS_366", 0),
-          ("VS", "EMS_366", 0),
-          ("SWI_IGK", "EMS_366", 0),
-        ]
-      elif CP.mdpsBus == 0:
-        signals += [
-          ("CR_Mdps_StrAng", "MDPS11", 0),
-          ("CF_Mdps_Stat", "MDPS11", 0),
-        ]
-        checks += [("MDPS11", 100)]
+
+    if Params().get_bool("HyundaiNaviSL"):
+      signals += [
+        ("SpeedLim_Nav_Clu", "Navi_HU", 0),
+      ]
+
+      checks += [
+        ("Navi_HU", 5)
+      ]
 
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0, enforce_checks=False)
 
@@ -553,14 +552,6 @@ class CarState(CarStateBase):
         ("MDPS12", 50),
         ("MDPS11", 100),
       ]
-      if CP.spasEnabled:
-        signals += [
-          ("CR_Mdps_StrAng", "MDPS11", 0),
-          ("CF_Mdps_Stat", "MDPS11", 0),
-        ]
-        checks += [
-          ("MDPS11", 100),
-        ]
     if CP.sasBus == 1:
       signals += [
         ("SAS_Angle", "SAS11", 0),

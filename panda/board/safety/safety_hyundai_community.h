@@ -16,27 +16,29 @@ const CanMsg HYUNDAI_COMMUNITY_TX_MSGS[] = {
   {1290, 0, 8}, //   SCC13,  Bus 0
   {905, 0, 8},  //   SCC14,  Bus 0
   {1186, 0, 8},  //   4a2SCC, Bus 0
-  {870, 1, 8}, // EMS_366, Bus 1
+  {790, 1, 8}, // EMS11, Bus 1
   {912, 0, 7}, {912,1, 7}, // SPAS11, Bus 0, 1
   {1268, 0, 8}, {1268,1, 8}, // SPAS12, Bus 0, 1
  };
 
 // older hyundai models have less checks due to missing counters and checksums
-AddrCheckStruct hyundai_community_rx_checks[] = {
+AddrCheckStruct hyundai_community_addr_checks[] = {
   {.msg = {{608, 0, 8, .check_checksum = true, .max_counter = 3U, .expected_timestep = 10000U},
            {881, 0, 8, .expected_timestep = 10000U}, { 0 }}},
   {.msg = {{902, 0, 8, .expected_timestep = 20000U}, { 0 }, { 0 }}},
   // {.msg = {{916, 0, 8, .expected_timestep = 20000U}}}, some Santa Fe does not have this msg, need to find alternative
 };
-const int HYUNDAI_COMMUNITY_RX_CHECK_LEN = sizeof(hyundai_community_rx_checks) / sizeof(hyundai_community_rx_checks[0]);
+
+#define HYUNDAI_COMMUNITY_ADDR_CHECK_LEN (sizeof(hyundai_community_addr_checks) / sizeof(hyundai_community_addr_checks[0]))
+
+addr_checks hyundai_community_rx_checks = {hyundai_community_addr_checks, HYUNDAI_COMMUNITY_ADDR_CHECK_LEN};
 
 static int hyundai_community_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
 
-  bool valid;
   int addr = GET_ADDR(to_push);
   int bus = GET_BUS(to_push);
 
-  valid = addr_safety_check(to_push, hyundai_community_rx_checks, HYUNDAI_COMMUNITY_RX_CHECK_LEN,
+  bool valid = addr_safety_check(to_push, &hyundai_community_rx_checks,
                             hyundai_get_checksum, hyundai_compute_checksum,
                             hyundai_get_counter);
 
@@ -210,7 +212,7 @@ static int hyundai_community_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
   if (addr == 593) {OP_MDPS_live = 20;}
   if (addr == 1265 && bus == 1) {OP_CLU_live = 20;} // only count mesage created for MDPS
   if (addr == 1057) {OP_SCC_live = 20; if (car_SCC_live > 0) {car_SCC_live -= 1;}}
-  if (addr == 870) {OP_EMS_live = 20;}
+  if (addr == 790) {OP_EMS_live = 20;}
 
   // 1 allows the message through
   return tx;
@@ -221,14 +223,14 @@ static int hyundai_community_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_f
   int bus_fwd = -1;
   int addr = GET_ADDR(to_fwd);
   int fwd_to_bus1 = -1;
-  //if (HKG_forward_bus1 || HKG_forward_obd){fwd_to_bus1 = 1;}
-  if ((HKG_forward_bus1 || HKG_forward_obd) && (addr == 688 ||addr == 608 || addr == 1136 || addr == 870)){fwd_to_bus1 = 1;}
+  if (HKG_forward_bus1 || HKG_forward_obd){fwd_to_bus1 = 1;}
+
   // forward cam to ccan and viceversa, except lkas cmd
   if (HKG_forward_bus2) {
     if (bus_num == 0) {
       if (!OP_CLU_live || addr != 1265 || HKG_mdps_bus == 0) {
         if (!OP_MDPS_live || addr != 593) {
-          if (!OP_EMS_live || addr != 870) {
+          if (!OP_EMS_live || addr != 790) {
             bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
           } else {
             bus_fwd = 2;  // EON create EMS11 for MDPS
@@ -282,7 +284,7 @@ static int hyundai_community_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_f
   return bus_fwd;
 }
 
-static void hyundai_community_init(int16_t param) {
+static const addr_checks* hyundai_community_init(int16_t param) {
   UNUSED(param);
   controls_allowed = false;
   relay_malfunction_reset();
@@ -291,6 +293,9 @@ static void hyundai_community_init(int16_t param) {
     current_board->set_can_mode(CAN_MODE_OBD_CAN2);
     puts("  MDPS or SCC on OBD2 CAN: setting can mode obd\n");
   }
+
+  hyundai_community_rx_checks = (addr_checks){hyundai_community_addr_checks, HYUNDAI_COMMUNITY_ADDR_CHECK_LEN};
+  return &hyundai_community_rx_checks;
 }
 
 const safety_hooks hyundai_community_hooks = {
@@ -299,6 +304,4 @@ const safety_hooks hyundai_community_hooks = {
   .tx = hyundai_community_tx_hook,
   .tx_lin = nooutput_tx_lin_hook,
   .fwd = hyundai_community_fwd_hook,
-  .addr_check = hyundai_community_rx_checks,
-  .addr_check_len = sizeof(hyundai_community_rx_checks) / sizeof(hyundai_community_rx_checks[0]),
 };

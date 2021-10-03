@@ -348,15 +348,18 @@ class SccSmoother:
     gas_factor = ntune_scc_get("sccGasFactor")
     brake_factor = ntune_scc_get("sccBrakeFactor")
 
-    lead = self.get_lead(sm)
-    if lead is not None:
-      if not lead.radar:
-        brake_factor *= 0.95
+    #lead = self.get_lead(sm)
+    #if lead is not None:
+    #  if not lead.radar:
+    #    brake_factor *= 0.95
 
     if accel > 0:
       accel *= gas_factor
     else:
       accel *= brake_factor
+
+    if accel < 0:
+      accel = interp(accel - CS.out.aEgo, [-1.0, -0.5], [2 * accel, accel])
 
     return accel
 

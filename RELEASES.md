@@ -1,10 +1,16 @@
+Version 0.8.10 (2021-XX-XX)
+========================
+ * Škoda Karoq 2019 support thanks to jyoung8607!
+
+Version 0.8.9 (2021-09-14)
+========================
+ * Improved fan control on comma three
+ * AGNOS 1.5: improved stability
+ * Honda e 2020 support
+
+
 Version 0.8.8 (2021-08-XX)
 ========================
-* OpenPilot now correctly reads and handles all SPAS states
-* Fixed SPAS.
-* Fixed SPAS to KLAS switch. 
-  * Switches at 45MPH
-* Fixed wobbles
  * New driving model with improved laneless performance
    * Trained on 5000+ hours of diverse driving data from 3000+ users in 40+ countries
    * Better anti-cheating methods during simulator training ensure the model hugs less when in laneless mode
@@ -144,8 +150,7 @@ Version 0.8.5 (2021-XX-XX)
  * NEOS 18 for comma two: update packages
  * AGNOS 1.3 for comma three: fix display init at high temperatures
  * Improved auto-exposure on comma three
- * Honda Accord 2021 support thanks to csouers!
- * Honda Accord Hybrid 2021 support thanks to csouers!
+ * Improved longitudinal control on Honda Nidec cars
  * Hyundai Kona Hybrid 2020 support thanks to haram-KONA!
  * Hyundai Sonata Hybrid 2021 support thanks to Matt-Wash-Burn!
  * Kia Niro Hybrid 2021 support thanks to tetious!

@@ -1,6 +1,6 @@
-from .NodesData import NodesData, NodeDataIdx
+from selfdrive.mapd.lib.NodesData import NodesData, NodeDataIdx
 from selfdrive.mapd.config import QUERY_RADIUS
-from .geo import ref_vectors, R, distance_to_points
+from selfdrive.mapd.lib.geo import ref_vectors, R, distance_to_points
 from itertools import compress
 import numpy as np
 
@@ -140,7 +140,7 @@ class Route():
       last_wr = way_relations[best_idx]
 
     # Build the node data from the ordered list of way relations
-    self._nodes_data = NodesData(self._ordered_way_relations)
+    self._nodes_data = NodesData(self._ordered_way_relations, wr_index)
 
     # Locate where we are in the route node list.
     self._locate()
@@ -162,7 +162,7 @@ class Route():
 
   def _locate(self):
     """Will resolve the index in the nodes_data list for the node ahead of the current location.
-    It updates as well the distance from the current location to the node ahead.
+       It updates as well the distance from the current location to the node ahead.
     """
     current = self.current_wr
     if current is None:
@@ -183,7 +183,7 @@ class Route():
   def current_wr(self):
     return self._ordered_way_relations[0] if len(self._ordered_way_relations) else None
 
-  def update(self, location_rad, bearing_rad, accuracy):
+  def update(self, location_rad, bearing_rad, location_stdev):
     """Will update the route structure based on the given `location_rad` and `bearing_rad` assuming progress on the
     route on the original direction. If direction has changed or active point on the route can not be found, the route
     will become invalid.
@@ -199,20 +199,29 @@ class Route():
     # with the way relations remaining ahead.
     for idx, wr in enumerate(self._ordered_way_relations):
       active_direction = wr.direction
-      wr.update(location_rad, bearing_rad, accuracy)
+      wr.update(location_rad, bearing_rad, location_stdev)
 
       if not wr.active:
         continue
 
-      if wr.direction == active_direction:
-        # We have now the current wr. Repopulate from here till the end and locate
-        self._ordered_way_relations = self._ordered_way_relations[idx:]
-        self._reset()
-        self._locate()
-        return
+      if wr.direction != active_direction:
+        # Driving direction on the route has changed. stop.
+        break
 
-      # Driving direction on the route has changed. stop.
-      break
+      # We have now the current wr. Repopulate from here till the end and locate
+      self._ordered_way_relations = self._ordered_way_relations[idx:]
+      self._reset()
+      self._locate()
+
+      # If the active way is diverting, check whether there are posibilities to divert from the route in the
+      # vecinity of the current location. If there are possibilities, then stop here to loose the route as we are
+      # most likely driving away. If there are no possibilites, then stick to the route as the diversion is probably
+      # just a matter of GPS accuracy. (It can happen after driving under a bridge)
+      if wr.diverting and len(self._nodes_data.possible_divertions(self._ahead_idx, self._distance_to_node_ahead)) > 0:
+        break
+
+      # The current location in route is valid, return.
+      return
 
     # if we got here, there is no new active way relation or driving direction has changed. Reset.
     self._reset()
@@ -242,7 +251,7 @@ class Route():
       return []
 
     self._cuvature_limits_ahead = self._nodes_data. \
-        curvatures_speed_limit_sections_ahead(self._ahead_idx, self._distance_to_node_ahead)
+      curvatures_speed_limit_sections_ahead(self._ahead_idx, self._distance_to_node_ahead)
 
     return self._cuvature_limits_ahead
 
@@ -297,3 +306,7 @@ class Route():
       return None
 
     return self._nodes_data.distance_to_end(self._ahead_idx, self._distance_to_node_ahead)
+
+  @property
+  def current_road_name(self):
+    return self.current_wr.name if self.located else None

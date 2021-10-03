@@ -1,8 +1,6 @@
 import numpy as np
 import math
 
-import cereal.messaging as messaging
-from common.numpy_fast import clip, interp
 from selfdrive.swaglog import cloudlog
 from common.realtime import sec_since_boot
 from selfdrive.controls.lib.longitudinal_mpc_lib import libmpc_py
@@ -47,7 +45,7 @@ class LongitudinalMpc():
     self.cur_state[0].v_ego = v_safe
     self.cur_state[0].a_ego = a_safe
 
-  def update(self, carstate, radarstate, v_cruise):
+  def update(self, carstate, radarstate, v_cruise, a_target, active):
     v_cruise_clipped = np.clip(v_cruise, self.cur_state[0].v_ego - 10., self.cur_state[0].v_ego + 10.0)
     poss = v_cruise_clipped * np.array(T_IDXS[:LON_MPC_N+1])
     speeds = v_cruise_clipped * np.ones(LON_MPC_N+1)

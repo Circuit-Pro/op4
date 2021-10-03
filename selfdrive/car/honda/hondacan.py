@@ -1,20 +1,11 @@
-from selfdrive.car.isotp_parallel_query import IsoTpParallelQuery
-from selfdrive.car.honda.values import HONDA_BOSCH, HONDA_BOSCH_EXT, CAR
+from selfdrive.car.honda.values import HONDA_BOSCH, CAR
 from selfdrive.config import Conversions as CV
-from selfdrive.swaglog import cloudlog
 
 # CAN bus layout with relay
 # 0 = ACC-CAN - radar side
 # 1 = F-CAN B - powertrain
 # 2 = ACC-CAN - camera side
 # 3 = F-CAN A - OBDII port
-
-RADAR_ADDR = 0x18DAB0F1
-EXT_DIAG_REQUEST = b'\x10\x03'
-EXT_DIAG_RESPONSE = b'\x50\x03'
-COM_CONT_REQUEST = b'\x28\x83\x03'
-COM_CONT_RESPONSE = b''
-
 
 def get_pt_bus(car_fingerprint):
   return 1 if car_fingerprint in HONDA_BOSCH else 0
@@ -26,30 +17,6 @@ def get_lkas_cmd_bus(car_fingerprint, radar_disabled=False):
     return get_pt_bus(car_fingerprint)
   # normally steering commands are sent to radar, which forwards them to powertrain bus
   return 0
-
-
-def disable_radar(logcan, sendcan, bus=1, timeout=0.1, debug=False):
-  """Silence the radar by disabling sending and receiving messages using UDS 0x28.
-  The radar will stay silent as long as openpilot keeps sending Tester Present.
-  Openpilot will emulate the radar. WARNING: THIS DISABLES AEB!"""
-  cloudlog.warning(f"radar disable {hex(RADAR_ADDR)} ...")
-
-  try:
-    query = IsoTpParallelQuery(sendcan, logcan, bus, [RADAR_ADDR], [EXT_DIAG_REQUEST], [EXT_DIAG_RESPONSE], debug=debug)
-
-    for _, _ in query.get_data(timeout).items():
-      cloudlog.warning("radar communication control disable tx/rx ...")
-
-      query = IsoTpParallelQuery(sendcan, logcan, bus, [RADAR_ADDR], [COM_CONT_REQUEST], [COM_CONT_RESPONSE], debug=debug)
-      query.get_data(0)
-
-      cloudlog.warning("radar disabled")
-      return
-
-  except Exception:
-    cloudlog.exception("radar disable exception")
-  cloudlog.warning("radar disable failed")
-
 
 def create_brake_command(packer, apply_brake, pump_on, pcm_override, pcm_cancel_cmd, fcw, idx, car_fingerprint, stock_brake):
   # TODO: do we loose pressure if we keep pump off for long?
@@ -169,18 +136,12 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, is_metric, idx, 
 
   lkas_hud_values = {
     'SET_ME_X41': 0x41,
+    'SET_ME_X48': 0x48,
     'STEERING_REQUIRED': hud.steer_required,
     'SOLID_LANES': hud.lanes,
     'BEEP': 0,
   }
-  if car_fingerprint not in HONDA_BOSCH_EXT:
-    lkas_hud_values['SET_ME_X48'] = 0x48
-
-  if car_fingerprint in HONDA_BOSCH_EXT and not openpilot_longitudinal_control:
-    commands.append(packer.make_can_msg('LKAS_HUD_A', bus_lkas, lkas_hud_values, idx))
-    commands.append(packer.make_can_msg('LKAS_HUD_B', bus_lkas, lkas_hud_values, idx))
-  else:
-    commands.append(packer.make_can_msg('LKAS_HUD', bus_lkas, lkas_hud_values, idx))
+  commands.append(packer.make_can_msg('LKAS_HUD', bus_lkas, lkas_hud_values, idx))
 
   if radar_disabled and car_fingerprint in HONDA_BOSCH:
     radar_hud_values = {

@@ -12,8 +12,8 @@ from selfdrive.config import Conversions as CV
 CRUISE_GAP_BP = [1., 2., 3., 4.]
 CRUISE_GAP_V = [1.3, 1.4, 1.8, 2.2]
 
-AUTO_TR_BP = [20.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 80.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
-AUTO_TR_V = [1.2, 1.3, 1.4, 1.5]
+AUTO_TR_BP = [10.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 130.*CV.KPH_TO_MS]
+AUTO_TR_V = [1.3, 1.40, 1.5]
 
 AUTO_TR_ENABLED = True
 AUTO_TR_CRUISE_GAP = 1
@@ -56,7 +56,7 @@ class LeadMpc():
     self.cur_state[0].v_ego = v_safe
     self.cur_state[0].a_ego = a_safe
 
-  def update(self, CS, radarstate, v_cruise):
+  def update(self, CS, radarstate, v_cruise, a_target, active):
     v_ego = CS.vEgo
     if self.lead_id == 0:
       lead = radarstate.leadOne

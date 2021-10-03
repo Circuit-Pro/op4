@@ -13,7 +13,7 @@ from common.basedir import BASEDIR
 from common.params import Params, ParamKeyType
 from common.text_window import TextWindow
 from selfdrive.boardd.set_time import set_time
-from selfdrive.hardware import HARDWARE, PC
+from selfdrive.hardware import HARDWARE, PC, EON
 from selfdrive.manager.helpers import unblock_stdout
 from selfdrive.manager.process import ensure_running, launcher
 from selfdrive.manager.process_config import managed_processes
@@ -54,7 +54,6 @@ def manager_init():
     ("ShowDebugUI", "0"),
     ("SpeedLimitControl", "1"),
     ("SpeedLimitPercOffset", "1"),
-    ("SpeedLimitDelayIncrease", "1"),
     ("TurnSpeedControl", "1"),
     ("TurnVisionControl", "1"),
     ("UseSMDPSHarness", "0"),
@@ -64,10 +63,8 @@ def manager_init():
     ("CleanUI", "1"),
     ("AR", "0"),
     ("UseLQR", "0"),
-    ("spasEnabled","0"),
     ("PutPrebuilt", "0"),
     ("TPMS_Alerts", "1"),
-    ("spasAlways", "0"),
     ("PutPrebuilt", "0"),
     ("StockNaviDecelEnabled", "0"),
     ("ShowDebugUI", "0"),
@@ -92,8 +89,6 @@ def manager_init():
 
   if params.get("Passive") is None:
     raise Exception("Passive must be set to continue")
-
-  os.umask(0)  # Make sure we can create files with 777 permissions
 
   # Create folders needed for msgq
   try:
@@ -147,10 +142,11 @@ def manager_cleanup():
 
 def manager_thread():
 
-  Process(name="shutdownd", target=launcher, args=("selfdrive.shutdownd",)).start()
+  if EON:
+    Process(name="shutdownd", target=launcher, args=("selfdrive.shutdownd",)).start()
+    system("am startservice com.neokii.optool/.MainService")
+
   Process(name="road_speed_limiter", target=launcher, args=("selfdrive.road_speed_limiter",)).start()
-  system("am startservice com.neokii.optool/.MainService")
-  system("am startservice com.neokii.openpilot/.MainService")
 
   cloudlog.info("manager start")
   cloudlog.info({"environ": os.environ})
