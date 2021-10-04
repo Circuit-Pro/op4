@@ -683,11 +683,6 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "Enable Send Parking Assist Messages up to 38mph. Warning: It is beta, be careful!!",
                                             "../assets/offroad/icon_road.png",
                                             this));
-  toggles.append(new ParamControl("spasAlways",
-                                            "Enable SPAS Always.",
-                                            "Enable Send Parking Assist Messages. Warning: It is beta, be careful!!",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
   toggles.append(new ParamControl("SPASDebug",
                                             "Enable SPAS Debugging.",
                                             "This outputs OP SPAS State: (The state that op is calling MDPS to) and MDPS SPAS State: (The state MDPS is actually in)",
