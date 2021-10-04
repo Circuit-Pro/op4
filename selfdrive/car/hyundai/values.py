@@ -754,14 +754,6 @@ FW_VERSIONS = {
     (Ecu.fwdCamera, 0x7c4, None): [b'\xf1\000QL  MFC  AT USA LHD 1.00 1.05 99211-F1000 181204',],
     (Ecu.engine, 0x7e0, None): [b'\xf1\x81606G2051\000\000\000\000\000\000\000\000',],
   },
-  CAR.SPORTAGE: {
-    (Ecu.transmission, 0x7e1, None): [
-      b'\xf1\x87KKKBBH312096U43Z\x9a\xaa\xaa\xaax\x89\x98\x99\x98\x88\x89\x88effV\x98\x88\xbf\xffw\xff\x8f\xf6\031\031\xf1\x816T6G4051\000\000\xf1\0006T6J0_C2\000\0006T6G4051\000\000TQL2G24NH0;\xd5\036\xc7',
-      b'\xf1\x87KKKBBH312096U43Z\x9a\xaa\xaa\xaax\x89\x98\x99\x98\x88\x89\x88effV\x98\x88\xbf\xffw\xff\x8f\xf6\031\031\xf1\x816T6G4051\000\000\xf1\0006T6J0_C2\000\0006T6G4051\000\000TQL2G24NH0\000\000\000\000',
-    ],
-    (Ecu.fwdCamera, 0x7c4, None): [b'\xf1\000QL  MFC  AT USA LHD 1.00 1.05 99211-F1000 181204',],
-    (Ecu.engine, 0x7e0, None): [b'\xf1\x81606G2051\000\000\000\000\000\000\000\000',],
-  },
   CAR.ELANTRA_2021: {
     (Ecu.fwdRadar, 0x7d0, None): [b'\xf1\x00CN7_ SCC FHCUP      1.00 1.01 99110-AA000         '],
     (Ecu.eps, 0x7d4, None): [
