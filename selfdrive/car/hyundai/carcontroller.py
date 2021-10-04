@@ -23,11 +23,10 @@ VisualAlert = car.CarControl.HUDControl.VisualAlert
 STEER_ANG_MAX = 350         # SPAS Max Angle
 #MAX DELTA V limits values
 ANGLE_DELTA_BP = [0., 5., 15.]
-ANGLE_DELTA_V = [0.8, 0.5, 0.2]     # windup limit
-ANGLE_DELTA_VU = [1.0, 0.8, 0.3]   # unwind limit
+ANGLE_DELTA_V = [1.0, 0.6, 0.2]    # windup limit
+ANGLE_DELTA_VU = [1.3, 0.9, 0.3]   # unwind limit
 TQ = 250 # = 1 NM * 100 is unit of measure for wheel.
 SPAS_SWITCH = 38 * CV.MPH_TO_MS #MPH
-#Try to fix OpenPilot wobble of SPAS at speed.
 SPEED = [0., 10., 20., 30., 40.]
 RATIO = [1., 1.0, 0.985, 0.97, 0.955]
 ###### SPAS #######
@@ -134,7 +133,7 @@ class CarController():
     if CS.spas_enabled:
       apply_angle = actuators.steeringAngleDeg
       if abs(apply_angle - CS.out.steeringAngleDeg) > 8: # Rate limit for when steering angle is far from apply_angle - JPR
-        rate_limit = 7
+        rate_limit = 8
         apply_angle = clip(actuators.steeringAngleDeg, CS.out.steeringAngleDeg - rate_limit, CS.out.steeringAngleDeg + rate_limit)
       else:
         if self.last_apply_angle * apply_angle > 0. and abs(apply_angle) > abs(self.last_apply_angle):
