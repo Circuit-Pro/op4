@@ -968,7 +968,8 @@ static void ui_draw_vision_speedlimit(UIState *s) {
 
   if (speedLimit > 0.0 && s->scene.engageable) {
     const Rect maxspeed_rect = {bdr_s * 2, int(bdr_s * 1.5), 184, 202};
-    const Rect speed_sign_rect = {maxspeed_rect.right() + bdr_s, maxspeed_rect.y, 2 * speed_sgn_r, 2 * speed_sgn_r};
+    const Rect speed_sign_rect = {maxspeed_rect.centerX() - speed_sgn_r, maxspeed_rect.bottom() + bdr_s,
+                                  2 * speed_sgn_r, 2 * speed_sgn_r};
     const float speed = speedLimit * (s->scene.is_metric ? 3.6 : 2.2369362921);
     const float speed_offset = speedLimitOffset * (s->scene.is_metric ? 3.6 : 2.2369362921);
 
@@ -1007,8 +1008,9 @@ static void ui_draw_vision_turnspeed(UIState *s) {
 
   if (show) {
     const Rect maxspeed_rect = {bdr_s * 2, int(bdr_s * 1.5), 184, 202};
-    const Rect speed_sign_rect = {maxspeed_rect.right() + bdr_s + 2 * speed_sgn_r, maxspeed_rect.y, 
-                                  2 * speed_sgn_r, maxspeed_rect.h};
+    const Rect speed_sign_rect = {maxspeed_rect.centerX() - speed_sgn_r, 
+                                  maxspeed_rect.bottom() + int(1.5 * bdr_s) + 2 * speed_sgn_r, 
+                                  2 * speed_sgn_r, maxspeed_rect.h};                                  
     const float speed = turnSpeed * (s->scene.is_metric ? 3.6 : 2.2369362921);
 
     auto turnSpeedControlState = longitudinal_plan.getTurnSpeedControlState();
@@ -1120,16 +1122,19 @@ static void ui_draw_vision_event(UIState *s) {
   }
   auto longitudinal_plan = (*s->sm)["longitudinalPlan"].getLongitudinalPlan();
   auto visionTurnControllerState = longitudinal_plan.getVisionTurnControllerState();
-  if (visionTurnControllerState > cereal::LongitudinalPlan::VisionTurnControllerState::DISABLED && s->scene.engageable) {
-    if (s->scene.show_debug_ui && visionTurnControllerState > cereal::LongitudinalPlan::VisionTurnControllerState::DISABLED && s->scene.engageable) {
-      const int size = 184;
-      const Rect rect = {s->fb_w - size - bdr_s, int(bdr_s * 1.5), size, size};
-      ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);
-      auto source = longitudinal_plan.getLongitudinalPlanSource();
-      const int alpha = source == cereal::LongitudinalPlan::LongitudinalPlanSource::TURN ? 255 : 100;
-      const QColor &color = tcs_colors[int(visionTurnControllerState)];
-      NVGcolor nvg_color = nvgRGBA(color.red(), color.green(), color.blue(), alpha);
-      ui_draw_rect(s->vg, rect, nvg_color, 10, 20.);
+  if (s->scene.show_debug_ui && 
+      visionTurnControllerState > cereal::LongitudinalPlan::VisionTurnControllerState::DISABLED && 
+      s->scene.engageable) {
+    // draw a rectangle with colors indicating the state with the value of the acceleration inside.
+    const int size = 184;
+    const Rect rect = {s->fb_w - size - bdr_s, int(bdr_s * 1.5), size, size};
+    ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);
+
+    auto source = longitudinal_plan.getLongitudinalPlanSource();
+    const int alpha = source == cereal::LongitudinalPlan::LongitudinalPlanSource::TURN ? 255 : 100;
+    const QColor &color = tcs_colors[int(visionTurnControllerState)];
+    NVGcolor nvg_color = nvgRGBA(color.red(), color.green(), color.blue(), alpha);
+    ui_draw_rect(s->vg, rect, nvg_color, 10, 20.);
     
       const float vision_turn_speed = longitudinal_plan.getVisionTurnSpeed() * (s->scene.is_metric ? 3.6 : 2.2369363);
       std::string acc_str = std::to_string((int)std::nearbyint(vision_turn_speed));
