@@ -1142,7 +1142,7 @@ static void ui_draw_vision_event(UIState *s) {
       ui_draw_text(s, rect.centerX(), rect.centerY(), acc_str.c_str(), 56, COLOR_WHITE_ALPHA(alpha), "sans-bold");
 }
 }
-}
+
 
 static void ui_draw_gps(UIState *s) {
   const int radius = 60;
