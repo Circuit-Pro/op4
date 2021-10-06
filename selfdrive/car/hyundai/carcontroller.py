@@ -146,6 +146,8 @@ class CarController():
       if abs(CS.out.steeringWheelTorque) > TQ:
         self.override = True
         print("OVERRIDE")
+      else:
+        self.override = False
 
 
 
