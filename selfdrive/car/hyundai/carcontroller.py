@@ -25,7 +25,7 @@ STEER_ANG_MAX = 350         # SPAS Max Angle
 ANGLE_DELTA_BP = [0., 5., 15.]
 ANGLE_DELTA_V = [1.0, 0.6, 0.2]    # windup limit
 ANGLE_DELTA_VU = [1.3, 0.9, 0.3]   # unwind limit
-TQ = 250 # = 1 NM * 100 is unit of measure for wheel.
+TQ = 285 # = 1 NM * 100 is unit of measure for wheel.
 SPAS_SWITCH = 38 * CV.MPH_TO_MS #MPH
 ###### SPAS #######
 
