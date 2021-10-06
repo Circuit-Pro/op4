@@ -117,6 +117,75 @@ TogglesPanel::TogglesPanel(QWidget *parent) : QWidget(parent) {
                                   "Show UI elements that aid debugging.",
                                   "../assets/offroad/icon_calibration.png",
                                   this));
+  toggles.append(new ParamControl("PutPrebuilt",
+                                            "Prebuilt Enable",
+                                            "Create prebuilt files to speed up load time.",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+  toggles.append(new ParamControl("AR",
+                                            "Enable Auto Record",
+                                            "Starts recording on car start and stops on car off.",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+  toggles.append(new ParamControl("CleanUI",
+                                            "Enables Cleaner UI",
+                                            "Removes most of the clutter.",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+  toggles.append(new ParamControl("LoggerEnabled",
+                                            "Enable Logger / Uploader",
+                                            "This causes slow frame time on weak hardware.",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+  toggles.append(new ParamControl("DisableUpdates",
+                                            "Disable Auto Updates",
+                                            "This Disables Auto Updates.",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+  toggles.append(new ParamControl("UseLQR",
+                                            "Enable LQR Lateral Control",
+                                            "For Linear Quadratic Ratio Control: Warning please run nTune after 15-20 miles of driving.",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+  toggles.append(new ParamControl("TPMS_Alerts",
+                                            "Enable TPMS Alerts",
+                                            "Enables Tire Pressure Monitoring System Alerts for Low Tire Pressure.",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+  toggles.append(new ParamControl("SSCOD",
+                                            "Stop Screen Capture on disengage",
+                                            "Stop Screen Capture on disengage, loss of steering, or any other event.",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+  toggles.append(new ParamControl("MadModeEnabled",
+                                            "Enable HKG MAD mode",
+                                            "Openpilot will engage when turn cruise control on",
+                                            "../assets/offroad/icon_openpilot.png",
+                                            this));
+
+  toggles.append(new ParamControl("LaneChangeEnabled",
+                                            "Enable Lane Change Assist",
+                                            "Perform assisted lane changes with openpilot by checking your surroundings for safety, activating the turn signal and gently nudging the steering wheel towards your desired lane. openpilot is not capable of checking if a lane change is safe. You must continuously observe your surroundings to use this feature.",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+
+  toggles.append(new ParamControl("AutoLaneChangeEnabled",
+                                            "Enable Auto Lane Change(Nudgeless)",
+                                            "warnings: it is beta, be careful!!",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+
+  toggles.append(new ParamControl("SccSmootherSyncGasPressed",
+                                            "Sync set speed on gas pressed",
+                                            "",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+
+  toggles.append(new ParamControl("CustomLeadMark",
+                                            "Use custom lead mark",
+                                            "",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
 
 #ifdef ENABLE_MAPS
   toggles.append(new ParamControl("NavSettingTime24h",
@@ -618,50 +687,6 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
 
   QList<ParamControl*> toggles;
 
-
-
-  toggles.append(new ParamControl("PutPrebuilt",
-                                            "Prebuilt Enable",
-                                            "Create prebuilt files to speed up load time.",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-  toggles.append(new ParamControl("AR",
-                                            "Enable Auto Record",
-                                            "Starts recording on car start and stops on car off.",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-  toggles.append(new ParamControl("CleanUI",
-                                            "Enables Cleaner UI",
-                                            "Removes most of the clutter.",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-  toggles.append(new ParamControl("LoggerEnabled",
-                                            "Enable Logger / Uploader",
-                                            "This causes slow frame time on weak hardware.",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-  toggles.append(new ParamControl("DisableUpdates",
-                                            "Disable Auto Updates",
-                                            "This Disables Auto Updates.",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-  toggles.append(new ParamControl("UseLQR",
-                                            "Enable LQR Lateral Control",
-                                            "For Linear Quadratic Ratio Control: Warning please run nTune after 15-20 miles of driving.",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-  toggles.append(new ParamControl("TPMS_Alerts",
-                                            "Enable TPMS Alerts",
-                                            "Enables Tire Pressure Monitoring System Alerts for Low Tire Pressure.",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-  toggles.append(new ParamControl("SSCOD",
-                                            "Stop Screen Capture on disengage",
-                                            "Stop Screen Capture on disengage, loss of steering, or any other event.",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-
-
   toggles.append(new ParamControl("UseSMDPSHarness",
                                             "Use SMDPS Harness",
                                             "Use of MDPS Harness to enable openpilot steering down to 0 MPH",
@@ -688,11 +713,6 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "This outputs OP SPAS State: (The state that op is calling MDPS to) and MDPS SPAS State: (The state MDPS is actually in)",
                                             "../assets/offroad/icon_road.png",
                                             this));
-  toggles.append(new ParamControl("MadModeEnabled",
-                                            "Enable HKG MAD mode",
-                                            "Openpilot will engage when turn cruise control on",
-                                            "../assets/offroad/icon_openpilot.png",
-                                            this));
 
   toggles.append(new ParamControl("IsLdwsCar",
                                             "LDWS",
@@ -700,41 +720,6 @@ CommunityPanel::CommunityPanel(QWidget* parent) : QWidget(parent) {
                                             "../assets/offroad/icon_openpilot.png",
                                             this));
 
-  toggles.append(new ParamControl("LaneChangeEnabled",
-                                            "Enable Lane Change Assist",
-                                            "Perform assisted lane changes with openpilot by checking your surroundings for safety, activating the turn signal and gently nudging the steering wheel towards your desired lane. openpilot is not capable of checking if a lane change is safe. You must continuously observe your surroundings to use this feature.",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-
-  toggles.append(new ParamControl("AutoLaneChangeEnabled",
-                                            "Enable Auto Lane Change(Nudgeless)",
-                                            "warnings: it is beta, be careful!!",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-
-  toggles.append(new ParamControl("SccSmootherSyncGasPressed",
-                                            "Sync set speed on gas pressed",
-                                            "",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-
-  toggles.append(new ParamControl("StockNaviDecelEnabled",
-                                            "Stock Navi based deceleration",
-                                            "Use the stock navi based deceleration for longcontrol",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-
-  toggles.append(new ParamControl("ShowDebugUI",
-                                            "Show Debug UI",
-                                            "",
-                                            "../assets/offroad/icon_shell.png",
-                                            this));
-
-  toggles.append(new ParamControl("CustomLeadMark",
-                                            "Use custom lead mark",
-                                            "",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
 
   for(ParamControl *toggle : toggles) {
     if(main_layout->count() != 0) {
