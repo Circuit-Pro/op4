@@ -147,7 +147,7 @@ class CarController():
       self.override = True
     else:
       self.override = False    
-        
+
       #Control type changer - JPR
     if CS.lkas_button_on != CS.prev_lkas_button:
       if self.cnt == 0:
@@ -162,8 +162,6 @@ class CarController():
     if self.cnt == 1: # Long only
       lkas_active = False
       spas_active = False
-
-
 
     if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
       self.assist = True
