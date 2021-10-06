@@ -146,8 +146,8 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     slowingDownSpeed @108;
     slowingDownSpeedSound @115;
 
-    normalcontrol @116;
-    longcontrol @117;
+    normalcontrol @117;
+    longcontrol @118;
   }
 }
 
