@@ -142,7 +142,12 @@ class CarController():
           rate_limit = interp(CS.out.vEgo, ANGLE_DELTA_BP, ANGLE_DELTA_VU)
         apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)    
       self.last_apply_angle = apply_angle
-      
+
+    if TQ <= CS.out.steeringWheelTorque <= -TQ:
+      self.override = True
+    else:
+      self.override = False    
+        
       #Control type changer - JPR
     if CS.lkas_button_on != CS.prev_lkas_button:
       if self.cnt == 0:
@@ -158,10 +163,7 @@ class CarController():
       lkas_active = False
       spas_active = False
 
-    if TQ <= CS.out.steeringWheelTorque <= -TQ:
-      self.override = True
-    else:
-      self.override = False
+
 
     if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
       self.assist = True
