@@ -614,7 +614,7 @@ class CarInterface(CarInterfaceBase):
 
     if self.CS.lkas_button_on != self.CS.prev_lkas_button and self.CC.cnt == 0:
       events.add(EventName.normalcontrol)
-    if self.CS.lkas_button_on != self.CS.prev_lkas_button and self.CC.cnt == 1:
+    else:
       events.add(EventName.longcontrol)
 
     if Params().get_bool('spasEnabled'):
