@@ -98,6 +98,8 @@ class CarController():
       self.spas_always = Params().get_bool('spasAlways')
       self.lkas_active = False
       self.spas_active = False
+      lkas_active = False
+      spas_active = False
       self.spas_active_last = 0
       self.assist = False
       self.override = False
@@ -143,11 +145,7 @@ class CarController():
         apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)    
       self.last_apply_angle = apply_angle
 
-      if abs(CS.out.steeringWheelTorque) > TQ and spas_active and not lkas_active:
-        self.override = True
-        print("OVERRIDE")
-      else:
-        self.override = False    
+
 
       #Control type changer - JPR
     if CS.lkas_button_on != CS.prev_lkas_button:
@@ -160,6 +158,13 @@ class CarController():
       if CS.spas_enabled:
         spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_always and not abs(CS.out.steeringWheelTorque) > TQ
         lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active and not abs(CS.out.steeringWheelTorque) > TQ
+
+      if abs(CS.out.steeringWheelTorque) > TQ and spas_active and not lkas_active:
+        self.override = True
+        print("OVERRIDE")
+      else:
+        self.override = False   
+        
       if not CS.spas_enabled:
         lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg
     if self.cnt == 1: # Long only
