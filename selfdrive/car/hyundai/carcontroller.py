@@ -157,6 +157,7 @@ class CarController():
     if self.cnt == 1: # Long only
       lkas_active = False
       spas_active = False
+      
       if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
         self.assist = True
       else:
