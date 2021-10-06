@@ -613,9 +613,9 @@ class CarInterface(CarInterfaceBase):
       events.events.remove(EventName.pedalPressed)
 
     if self.CS.lkas_button_on != self.CS.prev_lkas_button and self.CC.cnt == 0:
-      events.add(EventName.normalcontrol)
-    elif self.CS.lkas_button_on != self.CS.prev_lkas_button:
       events.add(EventName.longcontrol)
+    elif self.CS.lkas_button_on != self.CS.prev_lkas_button:
+      events.add(EventName.normalcontrol)
 
     if Params().get_bool('spasEnabled'):
       if self.CS.mdps11_stat == 7 and not self.CC.turning_indicator_alert:
