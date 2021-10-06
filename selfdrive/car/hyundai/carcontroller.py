@@ -147,6 +147,7 @@ class CarController():
     if CS.lkas_button_on != CS.prev_lkas_button:
       if self.cnt == 0:
         self.cnt = 1
+    if CS.lkas_button_on != CS.prev_lkas_button:
       if self.cnt == 1:
         self.cnt = 0
 
