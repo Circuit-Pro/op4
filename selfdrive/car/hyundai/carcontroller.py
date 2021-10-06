@@ -171,7 +171,7 @@ class CarController():
         spas_active = False
 
     if CS.spas_enabled: 
-      if abs(CS.out.steeringWheelTorque) > TQ:
+      if abs(CS.out.steeringWheelTorque) > TQ and spas_active and not lkas_active:
         self.override = True
         print("OVERRIDE")
       else:
