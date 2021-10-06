@@ -157,11 +157,16 @@ class CarController():
     if self.cnt == 1: # Long only
       lkas_active = False
       spas_active = False
-      
-      if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
-        self.assist = True
-      else:
-        self.assist = False
+
+    if TQ <= CS.out.steeringWheelTorque <= -TQ:
+      self.override = True
+    else:
+      self.override = False
+
+    if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
+      self.assist = True
+    else:
+      self.assist = False
       
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.out.leftBlinker or CS.out.rightBlinker:
