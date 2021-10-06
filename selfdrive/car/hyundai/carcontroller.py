@@ -89,6 +89,7 @@ class CarController():
     self.scc_live = not CP.radarOffCan
     self.accel_steady = 0
     self.mad_mode_enabled = Params().get_bool('MadModeEnabled')
+    self.cnt = 0
 
     if CP.spasEnabled:
       self.last_apply_angle = 0.0
@@ -127,6 +128,7 @@ class CarController():
 
     self.steer_rate_limited = new_steer != apply_steer
 
+
     # SPAS limit angle extremes for safety
     if CS.spas_enabled:
       apply_angle = actuators.steeringAngleDeg
@@ -140,11 +142,21 @@ class CarController():
           rate_limit = interp(CS.out.vEgo, ANGLE_DELTA_BP, ANGLE_DELTA_VU)
         apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)    
       self.last_apply_angle = apply_angle
-    if CS.spas_enabled:
-      spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_always 
-  
-      lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active and not TQ <= CS.out.steeringWheelTorque <= -TQ
+      
+      #Control type changer - JPR
+    if CS.lkas_button_on != CS.prev_lkas_button:
+      if self.cnt == 0:
+        self.cnt = 1
+      if self.cnt == 1:
+        self.cnt = 0
 
+    if self.cnt == 0: # Lat and Long
+      if CS.spas_enabled:
+        spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_always 
+        lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active and not TQ <= CS.out.steeringWheelTorque <= -TQ
+    if self.cnt == 1: # Long only
+      lkas_active = False
+      spas_active = False
       if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
         self.assist = True
       else:
