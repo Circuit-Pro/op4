@@ -98,8 +98,6 @@ class CarController():
       self.spas_always = Params().get_bool('spasAlways')
       self.lkas_active = False
       self.spas_active = False
-      lkas_active = False
-      spas_active = False
       self.spas_active_last = 0
       self.assist = False
       self.override = False
@@ -179,7 +177,7 @@ class CarController():
       if abs(CS.out.steeringWheelTorque) > TQ and spas_active and not lkas_active:
         self.override = True
         print("OVERRIDE")
-        
+
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.out.leftBlinker or CS.out.rightBlinker:
       self.turning_signal_timer = 1.0 / DT_CTRL  # Disable for 1.0 Seconds after blinker turned off
