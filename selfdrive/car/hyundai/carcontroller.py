@@ -143,11 +143,11 @@ class CarController():
         apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)    
       self.last_apply_angle = apply_angle
 
-    if abs(CS.out.steeringWheelTorque) > TQ and spas_active and not lkas_active:
-      self.override = True
-      print("OVERRIDE")
-    else:
-      self.override = False    
+      if abs(CS.out.steeringWheelTorque) > TQ and spas_active and not lkas_active:
+        self.override = True
+        print("OVERRIDE")
+      else:
+        self.override = False    
 
       #Control type changer - JPR
     if CS.lkas_button_on != CS.prev_lkas_button:
@@ -164,12 +164,14 @@ class CarController():
         lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg
     if self.cnt == 1: # Long only
       lkas_active = False
-      spas_active = False
+      if CS.spas_enabled:
+        spas_active = False
 
-    if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
-      self.assist = True
-    else:
-      self.assist = False
+    if CS.spas_enabled: 
+      if abs(apply_angle - CS.out.steeringAngleDeg) > 10:
+        self.assist = True
+      else:
+        self.assist = False
       
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.out.leftBlinker or CS.out.rightBlinker:
