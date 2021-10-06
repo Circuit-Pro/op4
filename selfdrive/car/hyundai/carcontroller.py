@@ -143,7 +143,7 @@ class CarController():
         apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)    
       self.last_apply_angle = apply_angle
 
-    if abs(CS.out.steeringWheelTorque) > TQ and spas_active:
+    if abs(CS.out.steeringWheelTorque) > TQ and spas_active and not lkas_active:
       self.override = True
       print("OVERRIDE")
     else:
