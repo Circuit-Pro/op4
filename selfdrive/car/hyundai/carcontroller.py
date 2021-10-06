@@ -143,8 +143,9 @@ class CarController():
         apply_angle = clip(actuators.steeringAngleDeg, self.last_apply_angle - rate_limit, self.last_apply_angle + rate_limit)    
       self.last_apply_angle = apply_angle
 
-    if TQ <= CS.out.steeringWheelTorque <= -TQ:
+    if abs(CS.out.steeringWheelTorque) > TQ:
       self.override = True
+      print("OVERRIDE")
     else:
       self.override = False    
 
@@ -157,8 +158,8 @@ class CarController():
 
     if self.cnt == 0: # Lat and Long
       if CS.spas_enabled:
-        spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_always and not TQ <= CS.out.steeringWheelTorque <= -TQ
-        lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active and not TQ <= CS.out.steeringWheelTorque <= -TQ
+        spas_active = CS.spas_enabled and enabled and CS.out.vEgo < SPAS_SWITCH or CS.spas_enabled and enabled and self.spas_always and not abs(CS.out.steeringWheelTorque) > TQ
+        lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg and not spas_active and not abs(CS.out.steeringWheelTorque) > TQ
       if not CS.spas_enabled:
         lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg
     if self.cnt == 1: # Long only
@@ -179,11 +180,6 @@ class CarController():
 
     if not lkas_active:
       apply_steer = 0
-
-    if abs(CS.out.steeringWheelTorque) > TQ:
-      lkas_active = False
-      spas_active = False
-      print("OVERRIDE")
 
     self.lkas_active = lkas_active
     self.spas_active = spas_active
@@ -443,5 +439,5 @@ class CarController():
           print("lkas_active:", lkas_active)
           print("driver torque:", CS.out.steeringWheelTorque)
 
-    self.spas_active_last = spas_active
+      self.spas_active_last = spas_active
     return can_sends
