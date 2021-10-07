@@ -7,8 +7,8 @@ Ecu = car.CarParams.Ecu
 class CarControllerParams:
 
   ACCEL_HYST_GAP = 0.02  # don't change accel command for small oscilalitons within this value
-  ACCEL_MAX = 1.5
-  ACCEL_MIN = -4.0
+  ACCEL_MIN = -3.5 # m/s
+  ACCEL_MAX = 2.0 # m/s
   ACCEL_SCALE = max(ACCEL_MAX, -ACCEL_MIN)
 
   STEER_MAX = 409   # 409 is the max, 255 is stock
@@ -55,6 +55,7 @@ class CAR:
   TUCSON_TL_SCC  = "HYUNDAI TUCSON TL SCC 2017"
   # kia
   FORTE = "KIA FORTE E 2018"
+  KIA_K5_2021 = "KIA K5 2021"
   K5 = "KIA K5 2019 & 2016"
   K5_HEV = "KIA K5 HYBRID 2017 & SPORTS 2019"
   SPORTAGE = "KIA SPORTAGE S 2020"  
@@ -653,6 +654,26 @@ FW_VERSIONS = {
     (Ecu.fwdCamera, 0x7c4, None): [b'\xf1\x00OS9 LKAS AT USA LHD 1.00 1.00 95740-J9300 g21', ],
     (Ecu.transmission, 0x7e1, None): [b'\xf1\x816U2VE051\x00\x00\xf1\x006U2V0_C2\x00\x006U2VE051\x00\x00DOS4T16NS3\x00\x00\x00\x00', ],
   },
+  CAR.KIA_K5_2021: {
+    (Ecu.fwdRadar, 0x7D0, None): [
+      b'\xf1\000DL3_ SCC FHCUP      1.00 1.03 99110-L2000         ',
+    ],
+    (Ecu.eps, 0x7D4, None): [
+      b'\xf1\x8756310-L3110\xf1\000DL3 MDPS C 1.00 1.01 56310-L3110 4DLAC101',
+    ],
+    (Ecu.fwdCamera, 0x7C4, None): [
+      b'\xf1\000DL3 MFC  AT USA LHD 1.00 1.03 99210-L3000 200915',
+    ],
+    (Ecu.esp, 0x7D1, None): [
+      b'\xf1\000DL ESC \006 101 \004\002 58910-L3200',
+    ],
+    (Ecu.engine, 0x7E0, None): [
+      b'\xf1\x87391212MKT0\xf1\xa00240',
+    ],
+    (Ecu.transmission, 0x7E1, None): [
+      b'\xf1\000bcsh8p54  U913\000\000\000\000\000\000TDL2T16NB1ia\v\xb8',
+    ],
+  },
   CAR.KONA_EV: {
     (Ecu.esp, 0x7D1, None): [
       b'\xf1\x00OS IEB \r 105\x18\t\x18 58520-K4000\xf1\xa01.05',
@@ -826,7 +847,7 @@ FEATURES = {
   "send_hda_state_2": {CAR.GENESIS_G80, CAR.GENESIS_EQ900, CAR.GENESIS_EQ900_L},
 
   # these cars use the FCA11 message for the AEB and FCW signals, all others use SCC12
-  "use_fca": {CAR.SONATA, CAR.ELANTRA, CAR.ELANTRA_GT_I30, CAR.STINGER, CAR.KIA_NIRO_HEV, CAR.IONIQ, CAR.IONIQ_EV_2020, CAR.IONIQ_PHEV, CAR.KONA, CAR.KONA_EV, CAR.FORTE,
+  "use_fca": {CAR.SONATA, CAR.ELANTRA, CAR.ELANTRA_GT_I30, CAR.STINGER, CAR.KIA_NIRO_HEV, CAR.IONIQ, CAR.IONIQ_EV_2020, CAR.IONIQ_PHEV, CAR.KONA, CAR.KONA_EV, CAR.FORTE, CAR.KIA_K5_2021,
               CAR.PALISADE, CAR.GENESIS_G70, CAR.SANTA_FE, CAR.SELTOS, CAR.ELANTRA_2021, CAR.ELANTRA_HEV_2021,
               CAR.K9, CAR.GENESIS_G90},
 
@@ -873,6 +894,7 @@ DBC = {
   CAR.SANTA_FE: dbc_dict('hyundai_kia_generic', None),
   CAR.PALISADE: dbc_dict('hyundai_kia_generic', None),
   CAR.VELOSTER: dbc_dict('hyundai_kia_generic', None),
+  CAR.KIA_K5_2021: dbc_dict('hyundai_kia_generic', None),
   CAR.GRANDEUR_IG: dbc_dict('hyundai_kia_generic', None),
   CAR.GRANDEUR_IG_HEV: dbc_dict('hyundai_kia_generic', None),
   CAR.GRANDEUR_IG_FL: dbc_dict('hyundai_kia_generic', None),
