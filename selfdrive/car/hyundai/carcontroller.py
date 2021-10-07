@@ -401,7 +401,7 @@ class CarController():
           can_sends.append(create_ems_366(self.packer, CS.ems_366, spas_active_stat))
           if Params().get_bool('SPASDebug'):
             print("EMS_366")
-        elif self.car_fingerprint == CAR.KONA_EV or self.car_fingerprint == CAR.KONA_HEV or self.car_fingerprint == CAR.IONIQ_HEV or self.car_fingerprint == CAR.SONATA21_HEV or self.car_fingerprint == CAR.IONIQ_EV_LTD or self.car_fingerprint == CAR.ELANTRA_HEV_2021:
+        elif self.car_fingerprint == CAR.KONA_EV or self.car_fingerprint == CAR.KONA_HEV or self.car_fingerprint == CAR.KIA_NIRO_HEV or self.car_fingerprint == CAR.IONIQ_HEV or self.car_fingerprint == CAR.SONATA21_HEV or self.car_fingerprint == CAR.IONIQ_EV_LTD or self.car_fingerprint == CAR.ELANTRA_HEV_2021:
           can_sends.append(create_eems11(self.packer, CS.eems11, spas_active_stat))
           if Params().get_bool('SPASDebug'):
             print("E_EMS11")
@@ -409,9 +409,6 @@ class CarController():
           can_sends.append(create_ems11(self.packer, CS.ems11, spas_active_stat))
           if Params().get_bool('SPASDebug'):
             print("EMS_11")
-
-
-
 
       if (frame % 2) == 0:
         if CS.mdps11_stat == 7:
