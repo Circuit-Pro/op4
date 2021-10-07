@@ -131,7 +131,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       // update array of samples
       update_sample(&torque_driver, torque_driver_new);
     }
-    puts("Torque from panda: "); puth(&torque_driver); puts("\n");
+    //puts("Torque from panda: "); puth(&torque_driver); puts("\n");
 
     // enter controls on rising edge of ACC, exit controls on ACC off
     if (addr == 1057) {
