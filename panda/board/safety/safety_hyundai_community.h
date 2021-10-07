@@ -6,7 +6,6 @@ int E_EMS11_live = 0;
 int OP_CLU_live = 0;
 int OP_SCC_live = 0;
 int car_SCC_live = 0;
-int OP_EMS_live = 0;
 int HKG_mdps_bus = -1;
 int HKG_scc_bus = -1;
 const CanMsg HYUNDAI_COMMUNITY_TX_MSGS[] = {
@@ -232,27 +231,31 @@ static int hyundai_community_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_f
   //if (HKG_forward_bus1 || HKG_forward_obd){fwd_to_bus1 = 1;}
   if ((HKG_forward_bus1 || HKG_forward_obd) && (addr == 688 ||addr == 608 || addr == 1136 || addr == 870 || addr == 881)){fwd_to_bus1 = 1;}
   // forward cam to ccan and viceversa, except lkas cmd
-  if (HKG_forward_bus2) {
+   if (HKG_forward_bus2) {
     if (bus_num == 0) {
       if (!OP_CLU_live || addr != 1265 || HKG_mdps_bus == 0) {
         if (!OP_MDPS_live || addr != 593) {
           if (!EMS366_live || addr != 870) {
             bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
-          } 
-          else if (!EMS11_live || addr != 790) {
-            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
-          } 
-          else if (!E_EMS11_live || addr != 881) {
-            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
-          } 
-          else {
+          } else {
             bus_fwd = 2;  // EON create EMS366 for MDPS
-            OP_EMS_live -= 1;
+            EMS366_live -= 1;
           }
-        }
-      } else {
-        bus_fwd = fwd_to_bus1;  // EON create MDPS for LKAS
-        OP_MDPS_live -= 1;
+          if (!EMS11_live || addr != 970) {
+            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
+          } else {
+            bus_fwd = 2;  // EON create EMS366 for MDPS
+            EMS11_live -= 1;
+          }
+          if (!E_EMS11_live || addr != 881) {
+            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
+          } else {
+            bus_fwd = 2;  // EON create EMS366 for MDPS
+            E_EMS11_live -= 1;
+          }
+        } else {
+          bus_fwd = fwd_to_bus1;  // EON create MDPS for LKAS
+          OP_MDPS_live -= 1;
         }
       } else {
         bus_fwd = 2; // EON create CLU12 for MDPS
