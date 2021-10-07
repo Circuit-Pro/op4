@@ -231,15 +231,29 @@ static int hyundai_community_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_f
     if (bus_num == 0) {
       if (!OP_CLU_live || addr != 1265 || HKG_mdps_bus == 0) {
         if (!OP_MDPS_live || addr != 593) {
-          if (!OP_EMS_live || addr != 870) {
-            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
-          } else if (!OP_EMS_live || addr != 790) {
-            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
-          } else if (!OP_EMS_live || addr != 881) {
-            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
-          } else {
-            bus_fwd = 2;  // EON create EMS366 for MDPS
-            OP_EMS_live -= 1;
+          if (addr == 870) {
+            if (!OP_EMS_live || addr != 870) {
+              bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
+            } else {
+              bus_fwd = 2;  // EON create EMS366 for MDPS
+              OP_EMS_live -= 1;
+            }
+          }
+          else if (addr == 790) {
+            if (!OP_EMS_live || addr != 870) {
+              bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
+            } else {
+              bus_fwd = 2;  // EON create EMS366 for MDPS
+              OP_EMS_live -= 1;
+            }
+          }
+          else if (addr == 881) {
+            if (!OP_EMS_live || addr != 870) {
+              bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
+            } else {
+              bus_fwd = 2;  // EON create EMS366 for MDPS
+              OP_EMS_live -= 1;
+            }
           }
         } else {
           bus_fwd = fwd_to_bus1;  // EON create MDPS for LKAS
