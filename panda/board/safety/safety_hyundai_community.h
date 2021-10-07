@@ -1,8 +1,6 @@
 int OP_LKAS_live = 0;
 int OP_MDPS_live = 0;
-int EMS366_live = 0;
-int EMS11_live = 0;
-int E_EMS11_live = 0;
+int OP_EMS_live = 0;
 int OP_CLU_live = 0;
 int OP_SCC_live = 0;
 int car_SCC_live = 0;
@@ -218,7 +216,7 @@ static int hyundai_community_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
   if (addr == 593) {OP_MDPS_live = 20;}
   if (addr == 1265 && bus == 1) {OP_CLU_live = 20;} // only count mesage created for MDPS
   if (addr == 1057) {OP_SCC_live = 20; if (car_SCC_live > 0) {car_SCC_live -= 1;}}
-
+  if (addr == 881 || addr == 790 || addr == 881) {OP_EMS_live = 20;}
   // 1 allows the message through
   return tx;
 }
