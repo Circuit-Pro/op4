@@ -231,7 +231,7 @@ static int hyundai_community_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_f
     if (bus_num == 0) {
       if (!OP_CLU_live || addr != 1265 || HKG_mdps_bus == 0) {
         if (!OP_MDPS_live || addr != 593) {
-          if (!OP_EMS_live || addr != 870 || addr != 790 addr != 881) {
+          if (!OP_EMS_live || addr != 870 || addr != 790 || addr != 881) {
             bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
           } else {
             bus_fwd = 2;  // EON create EMS366 for MDPS
