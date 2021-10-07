@@ -237,20 +237,14 @@ static int hyundai_community_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_f
         if (!OP_MDPS_live || addr != 593) {
           if (!EMS366_live || addr != 870) {
             bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
+          } else if (!EMS11_live || addr != 970) {
+            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
+          } else if (!E_EMS11_live || addr != 881) {
+            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
           } else {
             bus_fwd = 2;  // EON create EMS366 for MDPS
             EMS366_live -= 1;
-          }
-          if (!EMS11_live || addr != 970) {
-            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
-          } else {
-            bus_fwd = 2;  // EON create EMS366 for MDPS
             EMS11_live -= 1;
-          }
-          if (!E_EMS11_live || addr != 881) {
-            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
-          } else {
-            bus_fwd = 2;  // EON create EMS366 for MDPS
             E_EMS11_live -= 1;
           }
         } else {
