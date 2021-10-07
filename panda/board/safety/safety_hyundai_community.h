@@ -229,23 +229,17 @@ static int hyundai_community_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_f
   int addr = GET_ADDR(to_fwd);
   int fwd_to_bus1 = -1;
   //if (HKG_forward_bus1 || HKG_forward_obd){fwd_to_bus1 = 1;}
-  if ((HKG_forward_bus1 || HKG_forward_obd) && (addr == 688 ||addr == 608 || addr == 1136 || addr == 870 || addr == 881)){fwd_to_bus1 = 1;}
+  if ((HKG_forward_bus1 || HKG_forward_obd) && (addr == 688 ||addr == 608 || addr == 1136 || addr == 870 || addr == 790 || addr == 881)){fwd_to_bus1 = 1;}
   // forward cam to ccan and viceversa, except lkas cmd
-   if (HKG_forward_bus2) {
+  if (HKG_forward_bus2) {
     if (bus_num == 0) {
       if (!OP_CLU_live || addr != 1265 || HKG_mdps_bus == 0) {
         if (!OP_MDPS_live || addr != 593) {
-          if (!EMS366_live || addr != 870) {
-            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
-          } else if (!EMS11_live || addr != 970) {
-            bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
-          } else if (!E_EMS11_live || addr != 881) {
+          if (!OP_EMS_live || addr != 870) { // Replace 870 (EMS366) with either 790 (EMS11) or 881 (E_EMS11)
             bus_fwd = fwd_to_bus1 == 1 ? 12 : 2;
           } else {
             bus_fwd = 2;  // EON create EMS366 for MDPS
-            EMS366_live -= 1;
-            EMS11_live -= 1;
-            E_EMS11_live -= 1;
+            OP_EMS_live -= 1;
           }
         } else {
           bus_fwd = fwd_to_bus1;  // EON create MDPS for LKAS
@@ -256,6 +250,7 @@ static int hyundai_community_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_f
         OP_CLU_live -= 1;
       }
     }
+
     if (bus_num == 1 && (HKG_forward_bus1 || HKG_forward_obd)) {
       if (!OP_MDPS_live || addr != 593) {
         if (!OP_SCC_live || (addr != 1056 && addr != 1057 && addr != 1290 && addr != 905)) {
