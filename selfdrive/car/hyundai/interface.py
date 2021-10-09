@@ -28,10 +28,10 @@ class CarInterface(CarInterfaceBase):
     v_current_kph = current_speed * CV.MS_TO_KPH
 
     gas_max_bp = [0., 10., 20., 50., 70., 130.]
-    gas_max_v = [1.8, 1.15, 0.87, 0.63, 0.45, 0.33]
+    gas_max_v = [2., 1.8, 1.4, 0.95, 0.60, 0.38]
 
     brake_max_bp = [0, 70., 130.]
-    brake_max_v = [-4., -3., -2.1]
+    brake_max_v = [-6., -4.5, -2.8]
 
     return interp(v_current_kph, brake_max_bp, brake_max_v), interp(v_current_kph, gas_max_bp, gas_max_v)
 
@@ -376,7 +376,7 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 14.4 * 1.1   # 10% higher at the center seems reasonable
       tire_stiffness_factor = 0.7
       ret.centerToFront = ret.wheelbase * 0.4
-    elif candidate in [CAR.K5, CAR.K5_HEV]:
+    elif candidate in [CAR.K5, CAR.K5_HEV, CAR.KIA_K5_2021]:
       os.system("cd /data/openpilot/selfdrive/assets && rm -rf img_spinner_comma.png && cp Kia.png img_spinner_comma.png")
       ret.mass = 3558. * CV.LB_TO_KG
       ret.wheelbase = 2.80
@@ -621,11 +621,10 @@ class CarInterface(CarInterfaceBase):
     if self.mad_mode_enabled and EventName.pedalPressed in events.events:
       events.events.remove(EventName.pedalPressed)
 
-    # Check to see if lkas button on HKG was pressed - JPR
-    if self.CS.lkas_button_on != self.CS.prev_lkas_button and self.speed_limit:
-      self.speed_limit = False
-    if self.CS.lkas_button_on != self.CS.prev_lkas_button and not self.speed_limit:
-      self.speed_limit = True
+    if self.CS.lkas_button_on != self.CS.prev_lkas_button and self.CC.cnt == 0:
+      events.add(EventName.normalcontrol)
+    elif self.CS.lkas_button_on != self.CS.prev_lkas_button:
+      events.add(EventName.longcontrol)
 
   # handle button presses
     for b in ret.buttonEvents:

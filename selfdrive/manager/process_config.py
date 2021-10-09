@@ -19,6 +19,7 @@ if Params().get_bool('LoggerEnabled'):
     NativeProcess("modeld", "selfdrive/modeld", ["./modeld"]),
     NativeProcess("proclogd", "selfdrive/proclogd", ["./proclogd"]),
     NativeProcess("sensord", "selfdrive/sensord", ["./sensord"], enabled=not PC, persistent=EON, sigkill=EON),
+    NativeProcess("soundd", "selfdrive/ui", ["./soundd"]),
     NativeProcess("ubloxd", "selfdrive/locationd", ["./ubloxd"], enabled=(not PC or WEBCAM)),
     NativeProcess("ui", "selfdrive/ui", ["./ui"], persistent=True, watchdog_max_dt=(10 if TICI else None)),
     NativeProcess("locationd", "selfdrive/locationd", ["./locationd"]),

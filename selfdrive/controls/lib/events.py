@@ -612,6 +612,22 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
   EventName.speedLimitValueChange: {
     ET.WARNING: speed_limit_adjust_alert,
   },
+
+  EventName.normalcontrol: {
+    ET.WARNING: Alert(
+      "OpenPilot will Control Gas/Brake and Steering",
+      "",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimePrompt, 1., 0., 2.),
+  },
+
+    EventName.longcontrol: {
+    ET.WARNING: Alert(
+      "OpenPilot will Control Gas and Brake Only",
+      "",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimePrompt, 1., 0., 2.),
+  },
   # ********** events that affect controls state transitions **********
 
   EventName.pcmEnable: {
@@ -645,6 +661,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, Callable[[Any, messaging.SubMaster, boo
     ET.NO_ENTRY: NoEntryAlert("Pedal Pressed During Attempt",
                               visual_alert=VisualAlert.brakePressed),
   },
+
 
   EventName.wrongCarMode: {
     ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage),

@@ -60,7 +60,6 @@ def manager_init():
     ("SSCOD", "0"),
     ("DisableUpdates", "0"),
     ("LoggerEnabled", "0"),
-    ("CleanUI", "1"),
     ("AR", "0"),
     ("UseLQR", "0"),
     ("PutPrebuilt", "0"),

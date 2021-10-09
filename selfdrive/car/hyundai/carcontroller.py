@@ -79,7 +79,8 @@ class CarController():
     self.mad_mode_enabled = Params().get_bool('MadModeEnabled')
     self.ldws_opt = Params().get_bool('IsLdwsCar')
     self.stock_navi_decel_enabled = Params().get_bool('StockNaviDecelEnabled')
-
+    self.cnt = 0
+  
     # gas_factor, brake_factor
     # Adjust it in the range of 0.7 to 1.3
     self.scc_smoother = SccSmoother()
@@ -103,8 +104,19 @@ class CarController():
 
     self.steer_rate_limited = new_steer != apply_steer
 
-    # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg
+         #Control type changer - JPR
+    if CS.lkas_button_on != CS.prev_lkas_button:
+      if self.cnt == 0:
+        self.cnt = 1
+      else:
+        self.cnt = 0
+
+    if self.cnt == 0: # Lat and Long
+      # disable if steer angle reach 90 deg, otherwise mdps fault in some models
+      lkas_active = enabled and abs(CS.out.steeringAngleDeg) < CS.CP.maxSteeringAngleDeg
+    if self.cnt == 1: # Long only
+      lkas_active = False
+
 
     UseSMDPS = Params().get_bool('UseSMDPSHarness')
 

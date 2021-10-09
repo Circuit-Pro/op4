@@ -229,7 +229,6 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"UseSMDPSHarness", PERSISTENT},
     {"SSCOD", PERSISTENT},
     {"LoggerEnabled", PERSISTENT},
-    {"CleanUI", PERSISTENT},
     {"AR", PERSISTENT},
     {"UseLQR", PERSISTENT},
     {"PutPrebuilt", PERSISTENT},
