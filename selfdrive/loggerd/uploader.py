@@ -253,11 +253,11 @@ def uploader_fn(exit_event):
   backoff = 0.1
   while not exit_event.is_set():
     sm.update(0)
-
+    offroad = params.get_bool("IsOffroad")
     network_type = sm['deviceState'].networkType if not force_wifi else NetworkType.wifi
     if network_type == NetworkType.none:
       if allow_sleep:
-        time.sleep(60 if params.get_bool("IsOffroad") else 5)
+        time.sleep(60 if offroad else 5)
       continue
 
     good_internet = network_type in [NetworkType.wifi, NetworkType.ethernet]
@@ -266,7 +266,7 @@ def uploader_fn(exit_event):
     d = uploader.next_file_to_upload(with_raw=allow_raw_upload and good_internet and offroad)
     if d is None:  # Nothing to upload
       if allow_sleep:
-        time.sleep(60 if params.get_bool("IsOffroad") else 5)
+        time.sleep(60 if offroad else 5)
       continue
 
     key, fn = d
@@ -282,8 +282,10 @@ def uploader_fn(exit_event):
 
     pm.send("uploaderState", uploader.get_msg())
     cloudlog.info("upload done, success=%r", success)
+
 def main():
   uploader_fn(threading.Event())
+
 
 if __name__ == "__main__":
   main()

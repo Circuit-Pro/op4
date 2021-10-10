@@ -210,7 +210,7 @@ void encoder_thread(const LogCameraInfo &cam_info) {
       for (int i = 0; i < encoders.size(); ++i) {
         int out_id = encoders[i]->encode_frame(buf->y, buf->u, buf->v,
                                                buf->width, buf->height, extra.timestamp_eof);
-
+        
         if (out_id == -1) {
           LOGE("Failed to encode frame. frame_id: %d encode_id: %d", extra.frame_id, encode_idx);
         }
@@ -233,7 +233,6 @@ void encoder_thread(const LogCameraInfo &cam_info) {
           eidx.setSegmentNum(cur_seg);
           eidx.setSegmentId(out_id);
           if (lh) {
-            // TODO: this should read cereal/services.h for qlog decimation
             auto bytes = msg.toBytes();
             lh_log(lh, bytes.begin(), bytes.size(), true);
           }
