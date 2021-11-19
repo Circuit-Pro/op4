@@ -163,7 +163,7 @@ class CarState(CarStateBase):
       ret.stockAeb = cp.vl["FCA11"]["FCA_CmdAct"] != 0
       ret.stockFcw = cp.vl["FCA11"]["CF_VSM_Warn"] == 2
     else:
-      ret.stockAeb = cp.vl["SCC12"]["AEB_CmdAct"] != 0
+      ret.stockAeb = cp.vl["SCC12"]["AEB_CmdAct"] != 0 
       ret.stockFcw = cp.vl["SCC12"]["CF_VSM_Warn"] == 2
 
     # Blind Spot Detection and Lane Change Assist signals
@@ -193,7 +193,7 @@ class CarState(CarStateBase):
 
     # scc smoother
     driver_override = cp.vl["TCS13"]["DriverOverride"]
-    self.acc_mode = cp_scc.vl["SCC12"]["ACCMode"] != 0
+    self.acc_mode = cp_scc.vl["SCC12"]["ACCMode"] != 0 if not self no_radar else False
     self.cruise_gap = cp_scc.vl["SCC11"]["TauGapSet"] if not self.no_radar else 1
     self.gas_pressed = ret.gasPressed or driver_override == 1
     self.brake_pressed = ret.brakePressed or driver_override == 2
