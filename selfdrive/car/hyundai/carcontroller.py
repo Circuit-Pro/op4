@@ -148,7 +148,7 @@ class CarController():
     if frame == 0:  # initialize counts from last received count signals
       self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"]
       
-    self.prev_scc_cnt = CS.scc11["AliveCounterACC"]
+    self.prev_scc_cnt = CS.scc11["AliveCounterACC"] if self.longcontrol and not self.ldws_opt else 0
 
     self.lkas11_cnt = (self.lkas11_cnt + 1) % 0x10
 
