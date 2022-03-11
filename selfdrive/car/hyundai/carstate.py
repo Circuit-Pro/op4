@@ -571,8 +571,7 @@ class CarState(CarStateBase):
         ("FCA_CmdAct", "FCA11"),
         ("CF_VSM_Warn", "FCA11"),
       ]
-      if not CP.openpilotLongitudinalControl:
-        checks += [("FCA11", 50)]
+
 
     if CP.carFingerprint in [CAR.SANTA_FE, CAR.SANTA_FE_2022]:
       checks.remove(("TCS13", 50))
