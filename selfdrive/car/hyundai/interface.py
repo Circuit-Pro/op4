@@ -36,7 +36,7 @@ class CarInterface(CarInterfaceBase):
   def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=[]):  # pylint: disable=dangerous-default-value
     ret = CarInterfaceBase.get_std_params(candidate, fingerprint)
 
-    ret.openpilotLongitudinalControl = Params().get_bool('LongControlEnabled') or Params().get_bool('RadarDisableEnabled') or Params().get_bool('DisableRadar') and not Params().get_bool('IsLdwsCar')
+    ret.openpilotLongitudinalControl = Params().get_bool('LongControlEnabled') or Params().get_bool('DisableRadar') and not Params().get_bool('IsLdwsCar')
     ret.radarDisable = Params().get_bool('DisableRadar') and not Params().get_bool('IsLdwsCar')
 
     ret.carName = "hyundai"
